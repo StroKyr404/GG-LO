@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="description" content="Interaktive 3D-Simulation: Die Umlauf der Erde um die Sonne, die 23,5° Achsenneigung und die Entstehung der Jahreszeiten.">
+<meta name="theme-color" content="#050a18">
+<title>Eine Achse, vier Jahreszeiten – 3D-Labor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#050a18;
+    --ink:#f2f6ff;
+    --muted:#9fb0d8;
+    --gold:#ffcf3f;
+    --line:rgba(130,160,230,.28);
+    --panel:rgba(9,15,34,.68);
+    --disp:"Space Grotesk",system-ui,-apple-system,sans-serif;
+    --body:"Atkinson Hyperlegible",system-ui,-apple-system,sans-serif;
+  }
+  *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  html,body{ height:100%; }
+  body{
+    margin:0; overflow:hidden; touch-action:none; overscroll-behavior:none;
+    background:var(--bg); color:var(--ink); font-family:var(--body);
+    -webkit-user-select:none; user-select:none; -webkit-touch-callout:none;
+  }
+  button{ font-family:inherit; }
+  #app{ position:fixed; inset:0; z-index:0; }
+  #app canvas{ display:block; }
+  #vignette{
+    position:fixed; inset:0; z-index:1; pointer-events:none;
+    background:radial-gradient(ellipse at 50% 42%, transparent 52%, rgba(2,4,12,.55) 100%);
+  }
+
+  /* ---------- Titel ---------- */
+  #brand{
+    position:fixed; z-index:5; left:18px; top:16px; max-width:340px;
+    padding:14px 18px 13px;
+    background:var(--panel); border:1px solid var(--line); border-radius:14px;
+    backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
+  }
+  #brand .kicker{
+    font:700 10px/1 var(--disp); letter-spacing:.24em; text-transform:uppercase;
+    color:var(--gold); margin-bottom:8px;
+  }
+  #brand h1{
+    margin:0 0 8px; font:700 clamp(24px,3.4vw,34px)/1.02 var(--disp);
+    letter-spacing:-.02em; color:var(--ink);
+  }
+  #brand h1 em{ font-style:normal; color:var(--gold); }
+  #brand p{ margin:0; font:400 13px/1.5 var(--body); color:var(--muted); }
+  #brand p strong{ color:var(--ink); }
+  #brand p em{ color:var(--ink); }
+  #brand .gestures{
+    margin-top:9px; font:700 10px/1 var(--body); letter-spacing:.08em;
+    text-transform:uppercase; color:#6f83b5;
+  }
+
+  /* ---------- Daten-Panel ---------- */
+  #panel{
+    position:fixed; z-index:5; right:18px; top:16px; width:302px;
+    padding:13px 16px 12px;
+    background:var(--panel); border:1px solid var(--line); border-radius:14px;
+    backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
+  }
+  .p-head{ display:flex; align-items:center; gap:8px; margin-bottom:9px; }
+  .p-kicker{ font:700 10px/1 var(--disp); letter-spacing:.22em; text-transform:uppercase; color:var(--muted); }
+  .live-dot{ width:7px; height:7px; border-radius:50%; background:var(--gold);
+    box-shadow:0 0 8px var(--gold); animation:pulse 2s ease-in-out infinite; }
+  @keyframes pulse{ 0%,100%{opacity:1; transform:scale(1);} 50%{opacity:.35; transform:scale(.7);} }
+
+  .p-month{ display:flex; align-items:flex-end; gap:12px; margin-bottom:10px; }
+  #mNum{ font:700 46px/0.9 var(--disp); color:var(--gold);
+    text-shadow:0 0 22px rgba(255,207,63,.35); min-width:58px; }
+  #mName{ font:600 19px/1.1 var(--disp); color:var(--ink); }
+  #mDay{ font:400 12px/1.2 var(--body); color:var(--muted); margin-top:2px; }
+
+  .p-seasons{ display:flex; flex-wrap:wrap; gap:6px; margin-bottom:10px; }
+  .chip{
+    padding:5px 10px 4px; border-radius:8px;
+    font:700 11px/1.2 var(--disp); letter-spacing:.08em;
+    transition:background .3s,color .3s;
+  }
+  .chip-sub{ font-size:10px; letter-spacing:.06em; }
+  .p-row{ display:flex; justify-content:space-between; align-items:baseline;
+    padding:7px 0; border-top:1px solid rgba(130,160,230,.18); }
+  .p-row .lbl{ font:400 12px/1 var(--body); color:var(--muted); }
+  .p-row strong{ font:700 15px/1 var(--disp); color:var(--ink); }
+  #ssText{ margin:4px 0 9px; min-height:64px; font:400 13px/1.5 var(--body); color:var(--ink); }
+  .p-lock{
+    display:flex; align-items:flex-start; gap:7px;
+    padding:8px 0 9px; border-top:1px dashed rgba(255,207,63,.35);
+    font:700 10.5px/1.35 var(--body); color:#ffd98a;
+  }
+  .lock-dot{ flex:none; width:8px; height:8px; border-radius:50%; margin-top:2px;
+    background:var(--gold); box-shadow:0 0 8px var(--gold);
+    animation:pulse 2s ease-in-out infinite; }
+  .legend{
+    display:flex; flex-wrap:wrap; gap:6px 12px;
+    padding-top:8px; border-top:1px solid rgba(130,160,230,.18);
+    font:400 10px/1.2 var(--body); color:var(--muted);
+  }
+  .legend span{ display:inline-flex; align-items:center; gap:5px; }
+  .sw{ display:inline-block; }
+  .sw-axis{ width:13px; height:3px; border-radius:2px; background:var(--gold); }
+  .sw-star{ width:7px; height:7px; border-radius:50%; background:#fff;
+    box-shadow:0 0 6px 2px rgba(255,240,200,.9); }
+  .sw-orbit{ width:16px; height:0; border-top:2px dashed rgba(140,170,240,.8); }
+
+  /* ---------- 3D-Label-Tags ---------- */
+  .tag{
+    position:fixed; left:0; top:0; z-index:4; display:none;
+    transform:translate(-50%,-135%);
+    pointer-events:none; white-space:nowrap;
+    padding:3px 9px; border-radius:999px;
+    background:rgba(8,12,28,.82); border:1px solid;
+    font:700 12px/1.3 var(--disp); will-change:left,top;
+  }
+  .tag-n{ color:#ff8a66; border-color:rgba(255,107,74,.55); }
+  .tag-s{ color:#35c8ff; border-color:rgba(53,200,255,.55); }
+  .tag-p{
+    font:700 10px/1.3 var(--body); letter-spacing:.04em;
+    color:#ffe9b0; border-color:rgba(255,207,63,.45);
+    transform:translate(-50%,-160%);
+  }
+
+  /* ---------- Steuerleiste ---------- */
+  #bar{
+    position:fixed; z-index:6; left:16px; right:16px;
+    bottom:calc(14px + env(safe-area-inset-bottom));
+    display:flex; align-items:center; gap:14px;
+    padding:10px 14px 8px;
+    background:var(--panel); border:1px solid var(--line); border-radius:16px;
+    backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
+  }
+  .cbtn{
+    flex:none; width:50px; height:50px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    background:#14204a; border:1px solid var(--line); color:var(--gold);
+    cursor:pointer; touch-action:none;
+    transition:background .18s, transform .12s, color .18s, box-shadow .18s;
+  }
+  .cbtn:hover{ background:#1d2d62; box-shadow:0 0 14px rgba(120,160,255,.25); }
+  .cbtn:active{ transform:scale(.93); }
+  .cbtn.on{ background:var(--gold); color:#111a35; box-shadow:0 0 18px rgba(255,207,63,.5); }
+  .cbtn .ic-pause{ display:none; }
+  .cbtn.on .ic-play{ display:none; }
+  .cbtn.on .ic-pause{ display:block; }
+
+  .slider-wrap{ position:relative; flex:1; min-width:0; }
+  .bar-label{
+    display:flex; justify-content:space-between; align-items:baseline;
+    font:700 10px/1 var(--disp); letter-spacing:.18em; text-transform:uppercase;
+    color:var(--muted); margin:0 2px 2px;
+  }
+  .bar-label .right{ letter-spacing:.04em; color:#6f83b5; text-transform:none;
+    font-family:var(--body); font-weight:400; font-size:10px; }
+
+  input[type=range]{
+    -webkit-appearance:none; appearance:none;
+    width:100%; height:44px; margin:0; background:transparent;
+    cursor:pointer; display:block;
+  }
+  input[type=range]::-webkit-slider-runnable-track{
+    height:44px;
+    background:
+      linear-gradient(90deg, var(--gold) var(--p,0%), rgba(0,0,0,0) var(--p,0%)) no-repeat center / 100% 10px,
+      rgba(120,150,220,.22) no-repeat center / 100% 10px;
+    border-radius:10px;
+  }
+  input[type=range]::-webkit-slider-thumb{
+    -webkit-appearance:none; appearance:none;
+    width:30px; height:30px; margin-top:7px; border-radius:50%;
+    background:radial-gradient(circle at 35% 30%, #fff6cf, #ffcf3f 58%, #e8a51f);
+    border:2px solid #1a2240;
+    box-shadow:0 0 0 4px rgba(255,207,63,.22), 0 2px 10px rgba(0,0,0,.5);
+    transition:transform .12s ease;
+  }
+  input[type=range]:active::-webkit-slider-thumb{ transform:scale(1.15); }
+  input[type=range]::-moz-range-track{
+    height:10px; border-radius:6px; background:rgba(120,150,220,.22);
+  }
+  input[type=range]::-moz-range-progress{ height:10px; border-radius:6px; background:var(--gold); }
+  input[type=range]::-moz-range-thumb{
+    width:28px; height:28px; border-radius:50%;
+    background:radial-gradient(circle at 35% 30%, #fff6cf, #ffcf3f 58%, #e8a51f);
+    border:2px solid #1a2240; box-shadow:0 0 0 4px rgba(255,207,63,.22);
+  }
+
+  .marks{ position:absolute; left:0; right:0; top:34px; height:0; pointer-events:none; }
+  .mark{
+    position:absolute; top:0; width:8px; height:8px;
+    transform:translate(-50%,-50%) rotate(45deg); border-radius:2px;
+  }
+  .mark.sol{ background:#ffd75e; box-shadow:0 0 6px rgba(255,215,94,.8); }
+
+  .months{
+    display:flex; justify-content:space-between; padding:0 2px; margin-top:-2px;
+    font:700 10px/1 var(--disp); color:#5c6f9f;
+  }
+  .months span{ width:1.4em; text-align:center; transition:color .25s, transform .25s; }
+  .months span.on{ color:var(--gold); transform:scale(1.35); }
+
+  /* ---------- Fallback ---------- */
+  #fallback{
+    position:fixed; inset:0; z-index:99; display:none;
+    align-items:center; justify-content:center; text-align:center;
+    background:var(--bg); padding:24px;
+  }
+  #fallback h2{ font:700 22px var(--disp); margin:0 0 8px; }
+  #fallback p{ color:var(--muted); margin:0; font-size:14px; }
+
+  /* ---------- Schmale / Hochformate ---------- */
+  @media (max-width:1100px){
+    #panel{ width:270px; }
+    #brand{ max-width:300px; }
+  }
+  @media (max-width:760px){
+    #brand{ top:10px; left:10px; right:10px; max-width:none; padding:11px 13px 10px; }
+    #brand .kicker{ margin-bottom:5px; }
+    #brand p, #brand .gestures{ display:none; }
+    #brand h1{ font-size:20px; margin-bottom:0; }
+    #panel{
+      left:10px; right:10px; top:92px; width:auto;
+      padding:10px 13px;
+    }
+    .p-month{ margin-bottom:8px; }
+    #mNum{ font-size:34px; min-width:44px; }
+    .p-seasons{ margin-bottom:6px; }
+    .p-row{ border-top:none; padding:3px 0; }
+    #ssText{ min-height:0; margin:2px 0 6px; font-size:12.5px; }
+    .legend{ display:none; }
+    #bar{ left:8px; right:8px; gap:10px; padding:8px 10px 6px; }
+    .cbtn{ width:46px; height:46px; }
+    .bar-label .right{ display:none; }
+    .months span{ font-size:9px; }
+  }
+</style>
+</head>
+<body>
+
+<div id="app" aria-label="3D-Szene: Die Erde umläuft die Sonne. Ihre Achse bleibt immer 23,5 Grad geneigt."></div>
+<div id="vignette"></div>
+
+<!-- Titel -->
+<header id="brand">
+  <div class="kicker">Geo-Lab · Erde &amp; Sonne</div>
+  <h1>Eine Achse,<br>vier <em>Jahreszeiten</em></h1>
+  <p>Die Erdachse bleibt immer um <strong>23,5°</strong> geneigt und zeigt auf denselben Stern. Nur der <em>Winkel</em> des Sonnenlichts ändert sich – so entstehen die Jahreszeiten.</p>
+  <div class="gestures">Ziehen: drehen · Zwei Finger: zoomen</div>
+</header>
+
+<!-- Daten -->
+<aside id="panel" aria-live="off">
+  <div class="p-head"><span class="p-kicker">Daten</span><span class="live-dot"></span></div>
+  <div class="p-month">
+    <span id="mNum">6</span>
+    <div><div id="mName">Juni</div><div id="mDay">ca. Tag 22</div></div>
+  </div>
+  <div class="p-seasons">
+    <span class="chip" id="chipNH" style="background:#ffd75e;color:#0b1226">NORDHALBKUGEL · SOMMER</span>
+    <span class="chip chip-sub" id="chipSH" style="background:rgba(124,199,255,.34);color:#eef3ff">SÜDHALBKUGEL · WINTER</span>
+  </div>
+  <div class="p-row"><span class="lbl">Sonne steht senkrecht über</span><strong id="ssLat">23,5° N</strong></div>
+  <p id="ssText">Die Sonne steht senkrecht über dem Wendekreis des Krebses (23,5° N). Um den Nordpol ist rund um die Uhr hell. Volle Sommerzeit im Norden.</p>
+  <div class="p-lock"><span class="lock-dot"></span>Achse bleibt fix: 23,5° – immer zum Polarstern. Sie wackelt nie und dreht sich nicht zur Sonne.</div>
+  <div class="legend">
+    <span><i class="sw sw-axis"></i>Erdachse</span>
+    <span><i class="sw sw-star"></i>Polarstern</span>
+    <span><i class="sw sw-orbit"></i>Umlaufbahn</span>
+  </div>
+</aside>
+
+<!-- 3D-Label-Tags -->
+<div class="tag tag-n" id="tagN">N</div>
+<div class="tag tag-s" id="tagS">S</div>
+<div class="tag tag-p" id="tagP">Polarstern – die Achse zeigt das ganze Jahr hierher</div>
+
+<!-- Steuerleiste -->
+<footer id="bar">
+  <button id="btnPlay" class="cbtn" aria-label="Jahr abspielen oder pausieren" aria-pressed="false" title="Jahr abspielen / pausieren">
+    <svg class="ic ic-play" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z" fill="currentColor"/></svg>
+    <svg class="ic ic-pause" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h4v14H7zM13 5h4v14h-4z" fill="currentColor"/></svg>
+  </button>
+
+  <div class="slider-wrap">
+    <div class="bar-label">
+      <span>Zeit im Jahr – ziehen, um die Erde zu bewegen</span>
+      <span class="right">Auto: 1 Jahr ≈ 48 s</span>
+    </div>
+    <input id="time" type="range" min="0" max="12" step="0.01" value="5.7" style="--p:47.5%" aria-label="Monat im Jahr, Januar bis Dezember">
+    <div class="marks" aria-hidden="true">
+      <span class="mark sol" style="left:22.5%" title="Tag- und Nachtgleiche (≈ 21. März)"></span>
+      <span class="mark sol" style="left:47.5%" title="Sommersonnenwende (≈ 21. Juni)"></span>
+      <span class="mark sol" style="left:72.5%" title="Tag- und Nachtgleiche (≈ 23. September)"></span>
+      <span class="mark sol" style="left:97.5%" title="Wintersonnenwende (≈ 21. Dezember)"></span>
+    </div>
+    <div class="months" id="months" aria-hidden="true">
+      <span>J</span><span>F</span><span>M</span><span>A</span><span>M</span><span>J</span>
+      <span>J</span><span>A</span><span>S</span><span>O</span><span>N</span><span>D</span>
+    </div>
+  </div>
+
+  <button id="btnReset" class="cbtn" aria-label="Kamera zurücksetzen" title="Kamera zurücksetzen">
+    <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5V2L7 6l5 4V7a5 5 0 1 1-5 5H5a7 7 0 1 0 7-7z" fill="currentColor"/></svg>
+  </button>
+</footer>
+
+<div id="fallback">
+  <div>
+    <h2>3D konnte nicht starten</h2>
+    <p>Die Three.js-Bibliothek wurde nicht geladen.<br>Bitte die Internetverbindung prüfen und die Seite neu laden.</p>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script>
+if (!window.THREE || !window.THREE.OrbitControls) {
+  document.getElementById('fallback').style.display = 'flex';
+} else {
+(function () {
+  'use strict';
+
+  /* ================= Konstanten ================= */
+  var TILT      = 23.5 * Math.PI / 180;   // Achsenneigung – wird NIE verändert
+  var ORBIT_R   = 16;
+  var EARTH_R   = 1.6;
+  var SUN_R     = 3.2;
+  var STAR_DIST = 70;                     // Entfernung zum Polarstern (fix im Welt-Raum)
+  var CAM_HOME  = new THREE.Vector3(14, 10, 24);
+  var ORIGIN    = new THREE.Vector3(0, 0, 0);
+
+  /* ================= Renderer, Szene, Kamera ================= */
+  var app = document.getElementById('app');
+  var renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setClearColor(0x050a18, 1);
+  app.appendChild(renderer.domElement);
+
+  var scene = new THREE.Scene();
+  scene.fog = new THREE.FogExp2(0x050a18, 0.001);
+
+  var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 3000);
+  camera.position.copy(CAM_HOME);
+
+  var controls = new THREE.OrbitControls(camera, renderer.domElement);
+  controls.enableDamping = true;
+  controls.dampingFactor = 0.08;
+  controls.enablePan = false;              // 1 Finger = drehen, 2 Finger = nur zoomen
+  controls.minDistance = 7;
+  controls.maxDistance = 90;
+  controls.target.set(0, 0, 0);
+
+  /* ================= Licht: Punktlicht in der Sonne =================
+     Die Lichtstärke ist auf der ganzen Bahn gleich – nur der
+     WINKEL des Lichts ändert sich. Das ist die Botschaft. */
+  scene.add(new THREE.PointLight(0xfff3d6, 1.7));
+  scene.add(new THREE.AmbientLight(0x2a3a5c, 0.45));
+
+  /* ================= Glow-Texturen (Canvas erzeugt, keine Dateien) ================= */
+  function makeGlow(stops) {
+    var c = document.createElement('canvas'); c.width = c.height = 256;
+    var g = c.getContext('2d');
+    var grd = g.createRadialGradient(128, 128, 0, 128, 128, 128);
+    for (var i = 0; i < stops.length; i++) grd.addColorStop(stops[i][0], stops[i][1]);
+    g.fillStyle = grd; g.fillRect(0, 0, 256, 256);
+    return new THREE.CanvasTexture(c);
+  }
+
+  /* ================= Sonne ================= */
+  var sun = new THREE.Mesh(
+    new THREE.SphereGeometry(SUN_R, 48, 32),
+    new THREE.MeshBasicMaterial({ color: 0xffd84d })
+  );
+  scene.add(sun);
+
+  var glow = new THREE.Sprite(new THREE.SpriteMaterial({
+    map: makeGlow([
+      [0,   'rgba(255,246,214,1)'], [0.22, 'rgba(255,220,100,0.9)'],
+      [0.5, 'rgba(255,175,45,0.30)'], [1, 'rgba(255,150,20,0)']
+    ]),
+    transparent: true, blending: THREE.AdditiveBlending, depthWrite: false
+  }));
+  glow.scale.setScalar(14);
+  scene.add(glow);
+
+  /* ================= Sternenhimmel ================= */
+  var stars = (function () {
+    var N = 900, pos = new Float32Array(N * 3);
+    for (var i = 0; i < N; i++) {
+      var r = 300 + Math.random() * 400;
+      var th = Math.random() * Math.PI * 2;
+      var ph = Math.acos(2 * Math.random() - 1);
+      pos[i * 3]     = r * Math.sin(ph) * Math.cos(th);
+      pos[i * 3 + 1] = r * Math.cos(ph);
+      pos[i * 3 + 2] = r * Math.sin(ph) * Math.sin(th);
+    }
+    var geo = new THREE.BufferGeometry();
+    geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+    var pts = new THREE.Points(geo, new THREE.PointsMaterial({
+      color: 0xd7e4ff, size: 2.5, sizeAttenuation: false,
+      transparent: true, opacity: 0.8
+    }));
+    scene.add(pts);
+    return pts;
+  })();
+
+  /* ================= Fixe Achsenrichtung (WELTRAUM) =================
+     nDir ist die Richtung der Erdachse. Sie wird NUR EINMAL gesetzt
+     und bleibt beim ganzen Umlauf absolut gleich. */
+  var nDir = new THREE.Vector3(Math.sin(TILT), Math.cos(TILT), 0);
+  var starPos = nDir.clone().multiplyScalar(STAR_DIST);
+
+  /* ================= Polarstern (fix im Weltraum) ================= */
+  var polar = new THREE.Group();
+  var polarSprite = new THREE.Sprite(new THREE.SpriteMaterial({
+    map: makeGlow([
+      [0, 'rgba(255,255,255,1)'], [0.3, 'rgba(220,235,255,0.85)'], [1, 'rgba(180,210,255,0)']
+    ]),
+    transparent: true, blending: THREE.AdditiveBlending, depthWrite: false
+  }));
+  polarSprite.scale.setScalar(7);
+  polar.add(polarSprite);
+  polar.add(new THREE.Mesh(new THREE.SphereGeometry(0.4, 12, 10), new THREE.MeshBasicMaterial({ color: 0xffffff })));
+  polar.position.copy(starPos);
+  scene.add(polar);
+
+  /* ================= Umlaufbahn (gestrichelte Kreislinie) ================= */
+  (function () {
+    var pts = [];
+    for (var i = 0; i <= 128; i++) {
+      var a = (i / 128) * Math.PI * 2;
+      pts.push(new THREE.Vector3(Math.cos(a) * ORBIT_R, 0, Math.sin(a) * ORBIT_R));
+    }
+    var line = new THREE.Line(
+      new THREE.BufferGeometry().setFromPoints(pts),
+      new THREE.LineDashedMaterial({ color: 0x89a7e8, dashSize: 0.9, gapSize: 0.6, transparent: true, opacity: 0.5 })
+    );
+    line.computeLineDistances();
+    scene.add(line);
+  })();
+
+  /* ================= Erde =================
+     holder     : wird auf der Bahn verschoben (Slider)
+     tiltGroup  : rotation.z = -TILT – WIRD NIE GEÄNDERT.
+                  Weil holder sich nie dreht, ist die Achse eine
+                  KONSTANTE WELTRICHTUNG. (Kern der Lektion!)
+     earth      : dreht sich um die eigene (geneigte) Achse.      */
+  var holder = new THREE.Group();
+  scene.add(holder);
+
+  var tiltGroup = new THREE.Group();
+  tiltGroup.rotation.z = -TILT;           // ★ 23,5° – für immer fest
+  holder.add(tiltGroup);
+
+  var earth = new THREE.Mesh(
+    new THREE.SphereGeometry(EARTH_R, 48, 32),
+    new THREE.MeshStandardMaterial({ color: 0x2e6fd8, roughness: 0.85, metalness: 0.05 })
+  );
+  tiltGroup.add(earth);
+
+  // Äquator (weisse Linie)
+  var equator = new THREE.Mesh(
+    new THREE.TorusGeometry(EARTH_R * 1.008, 0.032, 8, 96),
+    new THREE.MeshBasicMaterial({ color: 0xffffff })
+  );
+  equator.rotation.x = Math.PI / 2;
+  tiltGroup.add(equator);
+
+  // Pole deutlich farbig (Norden warm, Süden kühl)
+  var capN = new THREE.Mesh(
+    new THREE.SphereGeometry(EARTH_R * 1.004, 24, 12, 0, Math.PI * 2, 0, 0.34),
+    new THREE.MeshBasicMaterial({ color: 0xff6b4a })
+  );
+  var capS = new THREE.Mesh(
+    new THREE.SphereGeometry(EARTH_R * 1.004, 24, 12, 0, Math.PI * 2, Math.PI - 0.34, 0.34),
+    new THREE.MeshBasicMaterial({ color: 0x35c8ff })
+  );
+  tiltGroup.add(capN); tiltGroup.add(capS);
+
+  // Sichtbare Erdachse: zwei dünne Stifte durch die Pole + Kugeln an den Enden
+  var rodGeo = new THREE.CylinderGeometry(0.05, 0.05, 0.95, 10);
+  var rodMat = new THREE.MeshBasicMaterial({ color: 0xffd23f });
+  var rodTop = new THREE.Mesh(rodGeo, rodMat); rodTop.position.y = EARTH_R + 0.475;
+  var rodBot = new THREE.Mesh(rodGeo, rodMat); rodBot.position.y = -(EARTH_R + 0.475);
+  tiltGroup.add(rodTop); tiltGroup.add(rodBot);
+  var beadGeo = new THREE.SphereGeometry(0.09, 12, 10);
+  var beadN = new THREE.Mesh(beadGeo, new THREE.MeshBasicMaterial({ color: 0xff6b4a })); beadN.position.y = EARTH_R + 0.95;
+  var beadS = new THREE.Mesh(beadGeo, new THREE.MeshBasicMaterial({ color: 0x35c8ff })); beadS.position.y = -(EARTH_R + 0.95);
+  tiltGroup.add(beadN); tiltGroup.add(beadS);
+
+  /* ================= Achsenlinie → Polarstern ================= */
+  var axisLine = new THREE.Line(
+    new THREE.BufferGeometry().setAttribute('position', new THREE.BufferAttribute(new Float32Array(6), 3)),
+    new THREE.LineDashedMaterial({ color: 0xbcd4ff, dashSize: 0.55, gapSize: 0.4, transparent: true, opacity: 0.45 })
+  );
+  scene.add(axisLine);
+
+  function updateAxisLine() {
+    var p = axisLine.geometry.attributes.position;
+    p.setXYZ(0, starPos.x, starPos.y, starPos.z);
+    p.setXYZ(1,
+      holder.position.x + nDir.x * (EARTH_R + 1.0),
+      holder.position.y + nDir.y * (EARTH_R + 1.0),
+      holder.position.z + nDir.z * (EARTH_R + 1.0));
+    p.needsUpdate = true;
+    axisLine.computeLineDistances();
+  }
+
+  /* ================= Sonnenstrahlen (Sonne → Erde) ================= */
+  function makeRay(color, opacity) {
+    var l = new THREE.Line(
+      new THREE.BufferGeometry().setAttribute('position', new THREE.BufferAttribute(new Float32Array(6), 3)),
+      new THREE.LineBasicMaterial({ color: color, transparent: true, opacity: opacity, blending: THREE.AdditiveBlending })
+    );
+    scene.add(l);
+    return l;
+  }
+  var rayMain = makeRay(0xffdf7a, 0.85);
+  var rayA = makeRay(0xffcf5e, 0.35); rayA.userData.off = new THREE.Vector3(0, 0.5, 0);
+  var rayB = makeRay(0xffcf5e, 0.35); rayB.userData.off = new THREE.Vector3(0, -0.5, 0);
+
+  function updateRays() {
+    var e = holder.position;
+    rayMain.geometry.attributes.position.setXYZ(1, e.x, e.y, e.z);
+    rayMain.geometry.attributes.position.needsUpdate = true;
+    var list = [rayA, rayB];
+    for (var i = 0; i < 2; i++) {
+      var o = list[i].userData.off;
+      list[i].geometry.attributes.position.setXYZ(1, e.x + o.x, e.y + o.y, e.z + o.z);
+      list[i].geometry.attributes.position.needsUpdate = true;
+    }
+  }
+
+  /* ================= Laufende Lichtpunkte auf der Strahlbahn ================= */
+  var photons = [];
+  for (var pi = 0; pi < 3; pi++) {
+    var ph = new THREE.Mesh(new THREE.SphereGeometry(1, 8, 6), new THREE.MeshBasicMaterial({ color: 0xfff2b8 }));
+    scene.add(ph);
+    photons.push(ph);
+  }
+
+  /* ================= UI-Elemente ================= */
+  var time     = document.getElementById('time');
+  var mName    = document.getElementById('mName');
+  var mNum     = document.getElementById('mNum');
+  var mDay     = document.getElementById('mDay');
+  var chipNH   = document.getElementById('chipNH');
+  var chipSH   = document.getElementById('chipSH');
+  var ssLat    = document.getElementById('ssLat');
+  var ssText   = document.getElementById('ssText');
+  var monthEls = Array.prototype.slice.call(document.querySelectorAll('#months span'));
+  var btnPlay  = document.getElementById('btnPlay');
+  var btnReset = document.getElementById('btnReset');
+  var tagN = document.getElementById('tagN'), tagS = document.getElementById('tagS'), tagP = document.getElementById('tagP');
+
+  var MONTHS = ['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'];
+  var NH_SEASON = ['Winter','Winter','Frühling','Frühling','Frühling','Sommer','Sommer','Sommer','Herbst','Herbst','Herbst','Winter'];
+  var OPP = { Winter:'Sommer', Sommer:'Winter', Frühling:'Herbst', Herbst:'Frühling' };
+  var COL = { Winter:'#7cc7ff', Frühling:'#79e0a3', Sommer:'#ffd75e', Herbst:'#ffa25f' };
+
+  var m = 5.7;              // Simulationszustand: 0 = 1. Januar … 12 = 1. Januar (nächstes Jahr)
+  var playing = false;
+
+  function setPlaying(v) {
+    playing = v;
+    btnPlay.classList.toggle('on', v);
+    btnPlay.setAttribute('aria-pressed', String(v));
+  }
+
+  function fmtDeg(x) { return x.toFixed(1).replace('.', ','); }
+
+  /* ================= Simulation: Slider → Ort auf der Bahn =================
+     a = m · 30°  ⇒  m = 5,7 (21. Juni) → a ≈ 180°  → Sommerwende Nord,
+                   m = 11,7 (21. Dez.) → a ≈ 360°  → Winterwende Nord.
+     Breitengrad des senkrechten Sonnenstandes: φ = −23,5° · cos(a).
+     Die Achse (tiltGroup) wird hier NIE berührt – sie bleibt weltweit fest! */
+  function updateSim() {
+    var mv = parseFloat(time.value);
+    if (mv >= 12) mv = 0;
+    m = mv;
+
+    var a = m * Math.PI / 6;
+    holder.position.set(Math.cos(a) * ORBIT_R, 0, Math.sin(a) * ORBIT_R);
+
+    var phi = -23.5 * Math.cos(a);
+    var mi  = Math.floor(m);
+    var day = Math.min(1 + Math.floor((m - mi) * 30.44), 31);
+
+    mName.textContent = MONTHS[mi];
+    mNum.textContent  = mi + 1;
+    mDay.textContent  = 'ca. Tag ' + day;
+
+    var sNH = NH_SEASON[mi];
+    var sSH = OPP[sNH];
+    chipNH.textContent = 'NORDHALBKUGEL · ' + sNH.toUpperCase();
+    chipNH.style.background = COL[sNH];
+    chipNH.style.color = '#0b1226';
+    chipSH.textContent = 'SÜDHALBKUGEL · ' + sSH.toUpperCase();
+    chipSH.style.background = COL[sSH] + '55';
+    chipSH.style.color = '#eef3ff';
+
+    var abs = fmtDeg(Math.abs(phi));
+    var NS  = phi >= 0 ? 'N' : 'S';
+    ssLat.textContent = abs + '° ' + NS;
+
+    if (Math.abs(phi) >= 19) {
+      ssText.textContent = (phi > 0)
+        ? 'Die Sonne steht senkrecht über dem Wendekreis des Krebses (23,5° N). Um den Nordpol ist rund um die Uhr hell. Volle Sommerzeit im Norden.'
+        : 'Die Sonne steht senkrecht über dem Wendekreis des Steinbocks (23,5° S). Um den Südpol ist rund um die Uhr hell. Volle Sommerzeit im Süden.';
+    } else if (Math.abs(phi) <= 6) {
+      ssText.textContent = 'Die Sonne steht senkrecht über dem Äquator (0°). Überall sind Tag und Nacht fast gleich lang. Das ist die Tag- und Nachtgleiche.';
+    } else {
+      ssText.textContent = 'Das Licht trifft am senkrechtesten auf ' + abs + '° ' + NS +
+        '. Die Sonne wandert zum Wendekreis des ' +
+        (phi > 0 ? 'Krebses (23,5° N) – im Norden wird es wärmer.' : 'Steinbocks (23,5° S) – im Süden wird es wärmer.');
+    }
+
+    time.style.setProperty('--p', (m / 12 * 100).toFixed(2) + '%');
+    for (var i = 0; i < 12; i++) monthEls[i].classList.toggle('on', i === mi);
+
+    updateRays();
+    updateAxisLine();
+  }
+
+  /* ================= Ereignisse ================= */
+  time.addEventListener('input', updateSim);
+  time.addEventListener('pointerdown', function () { setPlaying(false); });  // manuelles Ziehen stoppt Auto
+  btnPlay.addEventListener('click', function () { setPlaying(!playing); });
+  btnReset.addEventListener('click', function () {
+    camera.position.copy(CAM_HOME);
+    controls.target.set(0, 0, 0);
+    controls.update();
+  });
+
+  /* ================= Jahresmarken (Sonnenwenden/Gleichen) ================= */
+  var markEls = Array.prototype.slice.call(document.querySelectorAll('.mark'));
+  var MARK_FRACS = [0.225, 0.475, 0.725, 0.975];
+  function layoutMarks() {
+    var w = time.clientWidth;
+    var inset = 15; // halbe Breite des Reglerschiebers
+    var avail = Math.max(w - inset * 2, 10);
+    for (var i = 0; i < markEls.length; i++) {
+      markEls[i].style.left = (inset + MARK_FRACS[i] * avail) + 'px';
+    }
+  }
+
+  /* ================= 3D-Label-Tags (jeden Frame neu berechnet) ================= */
+  var tmpV = new THREE.Vector3();
+  function placeTag(el, world) {
+    tmpV.copy(world).project(camera);
+    if (tmpV.z > 1) { el.style.display = 'none'; return; }
+    var x = ( tmpV.x * 0.5 + 0.5) * window.innerWidth;
+    var y = (-tmpV.y * 0.5 + 0.5) * window.innerHeight;
+    if (x < -80 || x > window.innerWidth + 80 || y < -80 || y > window.innerHeight + 80) {
+      el.style.display = 'none'; return;
+    }
+    el.style.display = 'block';
+    el.style.left = x + 'px';
+    el.style.top  = y + 'px';
+  }
+
+  /* ================= Animations-Schleife ================= */
+  var clock = new THREE.Clock();
+  function animate() {
+    requestAnimationFrame(animate);
+    var dt = Math.min(clock.getDelta(), 0.1);
+    var t  = clock.elapsedTime;
+
+    if (playing) {
+      m = (m + dt * (12 / 48)) % 12;      // ein ganzes Jahr in 48 Sekunden
+      time.value = m;
+      updateSim();
+    }
+
+    earth.rotation.y += dt * 0.45;       // Tagesdrehung um die FESTE geneigte Achse
+    stars.rotation.y += dt * 0.006;
+    glow.scale.setScalar(14 + Math.sin(t * 1.6) * 0.6);
+
+    for (var i = 0; i < 3; i++) {
+      var tt = (t * 0.22 + i / 3) % 1;
+      photons[i].position.lerpVectors(ORIGIN, holder.position, tt);
+      photons[i].scale.setScalar(0.09 + 0.025 * Math.sin(t * 7 + i * 2));
+    }
+
+    placeTag(tagN, tmpV.set(
+      holder.position.x + nDir.x * (EARTH_R + 1.3),
+      holder.position.y + nDir.y * (EARTH_R + 1.3),
+      holder.position.z + nDir.z * (EARTH_R + 1.3)));
+    placeTag(tagS, tmpV.set(
+      holder.position.x - nDir.x * (EARTH_R + 1.3),
+      holder.position.y - nDir.y * (EARTH_R + 1.3),
+      holder.position.z - nDir.z * (EARTH_R + 1.3)));
+    placeTag(tagP, tmpV.set(starPos.x, starPos.y + 1.6, starPos.z));
+
+    controls.update();
+    renderer.render(scene, camera);
+  }
+
+  /* ================= Grössenänderung (auch iPad-Drehung) ================= */
+  window.addEventListener('resize', function () {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    layoutMarks();
+  });
+
+  /* ================= Start ================= */
+  layoutMarks();
+  updateSim();
+  animate();
+})();
+}
+</script>
+</body>
+</html>
