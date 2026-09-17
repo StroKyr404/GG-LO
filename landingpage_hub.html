@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="de" class="h-full dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GeoLab Sek I | Interaktive Geografie Lehrmittel</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Google Fonts: Inter & JetBrains Mono for code snippets -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- QRCode.js CDN for dynamic QR generation -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            brand: {
+              cyan: '#06b6d4',
+              indigo: '#6366f1',
+              violet: '#8b5cf6',
+              dark: '#0b0f19',
+              card: '#131c31',
+              border: 'rgba(255, 255, 255, 0.08)'
+            }
+          },
+          boxShadow: {
+            'glow-cyan': '0 0 20px -3px rgba(6, 182, 212, 0.35)',
+            'glow-indigo': '0 0 20px -3px rgba(99, 102, 241, 0.35)',
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #0b0f19;
+      color: #f1f5f9;
+    }
+    
+    /* Radial Glow Backgrounds */
+    .bg-mesh {
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.15) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(6, 182, 212, 0.12) 0px, transparent 50%),
+        radial-gradient(at 50% 50%, rgba(139, 92, 246, 0.08) 0px, transparent 50%);
+    }
+
+    /* Glassmorphism Cards */
+    .glass-card {
+      background: rgba(19, 28, 49, 0.65);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .glass-card:hover {
+      border-color: rgba(6, 182, 212, 0.4);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4), 0 0 15px rgba(6, 182, 212, 0.15);
+    }
+
+    /* Gradient Text */
+    .gradient-text {
+      background: linear-gradient(135deg, #38bdf8 0%, #818cf8 50%, #c084fc 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    /* Custom Scrollbars */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0b0f19;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #1e293b;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #334155;
+    }
+  </style>
+</head>
+<body class="bg-mesh min-h-full flex flex-col antialiased selection:bg-cyan-500 selection:text-slate-900">
+
+  <header class="sticky top-0 z-40 border-b border-white/10 bg-[#0b0f19]/80 backdrop-blur-md">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+      
+      <!-- Brand Logo -->
+      <a href="#" class="flex items-center gap-3 group">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 to-cyan-500 p-0.5 shadow-glow-cyan transition duration-300 group-hover:scale-105">
+          <div class="w-full h-full bg-slate-950 rounded-[10px] flex items-center justify-center">
+            <i class="fa-solid fa-earth-americas text-cyan-400 text-sm"></i>
+          </div>
+        </div>
+        <div>
+          <span class="text-base font-extrabold tracking-tight text-white block leading-none font-sans">
+            Geo<span class="gradient-text">Lab</span>
+          </span>
+          <span class="text-[10px] text-slate-400 font-mono">1.–3. SEKUNDARSCHULE</span>
+        </div>
+      </a>
+
+      <!-- Right Action Controls -->
+      <div class="flex items-center gap-3">
+        <button id="teacherGuideBtn" class="px-3.5 py-1.5 text-xs font-medium rounded-lg bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 transition flex items-center gap-2">
+          <i class="fa-solid fa-graduation-cap text-indigo-400"></i>
+          <span class="hidden sm:inline">Für Lehrpersonen</span>
+        </button>
+
+        <a href="https://github.com" target="_blank" rel="noopener noreferrer" class="p-2 rounded-lg bg-slate-800/60 text-slate-300 hover:text-white hover:bg-slate-800 border border-white/5 transition" title="GitHub Repository">
+          <i class="fa-brands fa-github text-base"></i>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main class="flex-grow max-w-6xl w-full mx-auto px-4 sm:px-6 pt-10 pb-20">
+    
+    <div class="relative rounded-2xl p-6 sm:p-10 mb-10 overflow-hidden border border-white/10 glass-card">
+      <div class="absolute -right-16 -top-16 w-80 h-80 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
+      <div class="absolute -left-16 -bottom-16 w-80 h-80 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+      <div class="relative z-10 max-w-2xl">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 text-xs font-mono mb-4">
+          <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
+          INTERAKTIVE LEHRMITTEL &amp; SIMULATIONEN
+        </div>
+        <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-white leading-tight">
+          Geografie für die <span class="gradient-text">Sekundarstufe I</span>
+        </h1>
+        <p class="mt-3 text-sm sm:text-base text-slate-300 font-normal leading-relaxed">
+          Open-Source Kartenwerkzeuge, 3D-Geomodelle und Datenanalysen. Direkt im Webbrowser nutzbar – optimiert für Schülertablets &amp; Smartboards.
+        </p>
+      </div>
+    </div>
+
+    <div class="flex flex-col sm:flex-row gap-4 items-center justify-between mb-8">
+      
+      <!-- Live Search Input -->
+      <div class="relative w-full sm:w-80">
+        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+        <input type="text" id="searchInput" placeholder="Suchen (z.B. Plattentektonik, Klima)..." class="w-full pl-9 pr-4 py-2.5 bg-slate-900/90 border border-slate-700/80 rounded-xl text-xs sm:text-sm text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition">
+      </div>
+
+      <!-- Grade Filter Controls -->
+      <div class="flex items-center gap-1.5 bg-slate-900/90 p-1.5 rounded-xl border border-slate-800 w-full sm:w-auto justify-center" id="gradeFilterGroup">
+        <button data-grade="all" class="grade-btn px-4 py-1.5 rounded-lg text-xs font-medium transition bg-gradient-to-r from-indigo-600 to-cyan-600 text-white shadow-glow-indigo">
+          Alle Stufen
+        </button>
+        <button data-grade="1. Sek" class="grade-btn px-4 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-white transition">
+          1. Sek
+        </button>
+        <button data-grade="2. Sek" class="grade-btn px-4 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-white transition">
+          2. Sek
+        </button>
+        <button data-grade="3. Sek" class="grade-btn px-4 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-white transition">
+          3. Sek
+        </button>
+      </div>
+    </div>
+
+    <!-- Active Count Counter -->
+    <div class="flex items-center justify-between mb-4 px-1">
+      <div class="text-xs font-mono text-slate-400">
+        GEZEIGT: <span id="visibleCount" class="text-cyan-400 font-bold">0</span> MODULE
+      </div>
+      <button id="resetFiltersBtn" class="text-xs text-indigo-400 hover:text-indigo-300 underline hidden">
+        Filter zurücksetzen
+      </button>
+    </div>
+
+    <div id="modulesGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <!-- Injected via JavaScript -->
+    </div>
+
+    <!-- Empty State -->
+    <div id="emptyState" class="hidden text-center py-20 glass-card rounded-2xl">
+      <div class="w-12 h-12 mx-auto mb-3 rounded-xl bg-slate-800 flex items-center justify-center text-slate-400 text-xl border border-slate-700">
+        <i class="fa-solid fa-earth-americas"></i>
+      </div>
+      <h3 class="text-base font-bold text-white">Keine Geografie-Lernmedien gefunden</h3>
+      <p class="text-slate-400 text-xs mt-1 max-w-xs mx-auto">Passe deine Suche oder den Stufen-Filter an.</p>
+    </div>
+
+  </main>
+
+  <div id="qrModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md opacity-0 pointer-events-none transition-opacity duration-200">
+    <div class="bg-slate-900 border border-slate-700/80 rounded-2xl max-w-sm w-full p-6 text-center shadow-2xl relative">
+      <button id="closeQrModalBtn" class="absolute top-4 right-4 text-slate-400 hover:text-white">
+        <i class="fa-solid fa-xmark text-lg"></i>
+      </button>
+
+      <div class="w-10 h-10 rounded-xl bg-cyan-500/10 text-cyan-400 flex items-center justify-center text-lg mx-auto mb-3 border border-cyan-500/20">
+        <i class="fa-solid fa-qrcode"></i>
+      </div>
+
+      <h3 id="qrModalTitle" class="text-base font-bold text-white">
+        QR-Code für den Unterricht
+      </h3>
+      <p class="text-xs text-slate-400 mt-1 mb-4">
+        Anwandmöglichtkeit: Projizieren oder von Schüler-Tablets scannen lassen.
+      </p>
+
+      <!-- QR Code Container -->
+      <div class="bg-white p-4 rounded-xl border border-slate-200 inline-block mx-auto shadow-inner min-w-[180px] min-h-[180px] flex items-center justify-center" id="qrcodeCanvas"></div>
+
+      <p id="qrModalUrl" class="text-[11px] font-mono text-slate-400 truncate mt-3 bg-slate-950 p-2 rounded-lg border border-slate-800 select-all">
+        -
+      </p>
+
+      <div class="mt-5">
+        <button id="closeQrModalBtn2" class="w-full py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-xs font-semibold transition">
+          Schliessen
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="teacherModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md opacity-0 pointer-events-none transition-opacity duration-200">
+    <div class="bg-slate-900 border border-slate-700/80 rounded-2xl max-w-lg w-full p-6 shadow-2xl relative">
+      <button id="closeTeacherModalBtn" class="absolute top-4 right-4 text-slate-400 hover:text-white">
+        <i class="fa-solid fa-xmark text-lg"></i>
+      </button>
+
+      <div class="flex items-center gap-3 mb-4">
+        <div class="w-10 h-10 rounded-xl bg-indigo-500/10 text-indigo-400 flex items-center justify-center text-lg border border-indigo-500/20">
+          <i class="fa-solid fa-graduation-cap"></i>
+        </div>
+        <div>
+          <h3 class="text-base font-bold text-white">Integration &amp; Unterrichtseinsatz</h3>
+          <p class="text-xs text-slate-400">Leitfaden für Geografie-Lehrpersonen</p>
+        </div>
+      </div>
+
+      <div class="space-y-4 text-xs text-slate-300">
+        <p>
+          Alle HTML-Tools sind browserbasiert, datenschutzkonform und lassen sich nahtlos in Schul-LMS (z.B. Teams, Moodle, SchoolFox, Canvas) einbinden.
+        </p>
+
+        <div class="p-3 bg-slate-950 rounded-xl border border-slate-800">
+          <span class="block text-[11px] font-mono text-slate-400 mb-1">Moodle / LMS Iframe Code:</span>
+          <code class="text-[11px] font-mono text-cyan-400 break-all select-all">
+            &lt;iframe src="https://dein-username.github.io/repo/plattentektonik.html" width="100%" height="650" frameborder="0" allowfullscreen&gt;&lt;/iframe&gt;
+          </code>
+        </div>
+
+        <ul class="space-y-2 text-slate-400">
+          <li class="flex items-center gap-2"><i class="fa-solid fa-check text-cyan-400"></i> Keine Registrierung oder Login erforderlich</li>
+          <li class="flex items-center gap-2"><i class="fa-solid fa-check text-cyan-400"></i> Kompatibel mit iPads, Chromebooks &amp; Windows-Tablets</li>
+          <li class="flex items-center gap-2"><i class="fa-solid fa-check text-cyan-400"></i> Lehrplan 21 / Sek I Geografie Ausrichtung</li>
+        </ul>
+      </div>
+
+      <div class="mt-6 text-right">
+        <button id="closeTeacherModalBtn2" class="px-5 py-2 bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 text-white rounded-xl text-xs font-semibold transition">
+          Verstanden
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <footer class="border-t border-white/10 bg-[#0b0f19] py-8 text-xs text-slate-500">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-2">
+        <i class="fa-solid fa-earth-europe text-cyan-400"></i>
+        <span>GeoLab Sek I &copy; <span id="currentYear"></span>. Open Educational Resources (OER).</span>
+      </div>
+      <div class="font-mono text-[11px] text-slate-600">
+        GEOGRAFIE LEHRMITTEL REPOSITORY
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    /**
+     * GEOGRAFIE MODULE DATENBANK
+     * Erweitere diesen Array einfach mit deinen neuen .html Dateien!
+     */
+    const geoModules = [
+      {
+        id: "tektonik",
+        title: "Plattentektonik & Erdbeben 3D",
+        grade: "1. Sek",
+        description: "Interaktive Simulation von Plattengrenzen (divergierend, konvergierend, Transformstörung) inklusive Erdbebensektoren und Vulkantypen.",
+        fileName: "./plattentektonik.html",
+        icon: "fa-solid fa-volcano",
+        badgeColor: "text-amber-400 border-amber-500/30 bg-amber-500/10",
+        tags: ["#EndogeneProzesse", "#Vulkanismus", "#3D"]
+      },
+      {
+        id: "klimadiagramm",
+        title: "Klimadiagramme Auswerten",
+        grade: "2. Sek",
+        description: "Interaktive Erstellung und Analyse von Walter/Lieth Klimadiagrammen. Schülertool zum Bestimmen von Humidität und Aridität.",
+        fileName: "./klimadiagramme.html",
+        icon: "fa-solid fa-cloud-sun-rain",
+        badgeColor: "text-cyan-400 border-cyan-500/30 bg-cyan-500/10",
+        tags: ["#Klima", "#Diagramme", "#Wetter"]
+      },
+      {
+        id: "hoehenprofil",
+        title: "Kartografie & Isohypsen (3D)",
+        grade: "1. Sek",
+        description: "Von der 2D-Landeskarte zum 3D-Geländemodell: Höhenlinien, Maßstabsberechnung und Profilschnitte schrittweise verstehen.",
+        fileName: "./hoehenlinien-3d.html",
+        icon: "fa-solid fa-layer-group",
+        badgeColor: "text-emerald-400 border-emerald-500/30 bg-emerald-500/10",
+        tags: ["#Kartografie", "#Topografie", "#Maßstab"]
+      },
+      {
+        id: "demografie",
+        title: "Bevölkerungspyramiden & Wandel",
+        grade: "3. Sek",
+        description: "Vergleich von Altersstrukturdiagrammen (Pyramide, Glocke, Urne) im Zeitverlauf (1950–2050) und Modell des demografischen Übergangs.",
+        fileName: "./demografie.html",
+        icon: "fa-solid fa-users-line",
+        badgeColor: "text-indigo-400 border-indigo-500/30 bg-indigo-500/10",
+        tags: ["#Demografie", "#Entwicklung", "#Statistik"]
+      },
+      {
+        id: "globalisierung",
+        title: "Globalisierung & Lieferketten",
+        grade: "3. Sek",
+        description: "Interaktiver Weltkarten-Tracker zur Analyse globaler Handelsströme am Beispiel der Schokoladen- und Jeansproduktion.",
+        fileName: "./lieferketten.html",
+        icon: "fa-solid fa-route",
+        badgeColor: "text-violet-400 border-violet-500/30 bg-violet-500/10",
+        tags: ["#Globalisierung", "#Wirtschaft", "#Weltkarte"]
+      },
+      {
+        id: "energiewende",
+        title: "Ressourcen & Energiewende",
+        grade: "2. Sek",
+        description: "Simulations-Tool zum Berechnen des Energiemix (Wasserkraft, Solar, Wind) einer Schweizer Gemeinde inklusive CO₂-Bilanz.",
+        fileName: "./energiewende.html",
+        icon: "fa-solid fa-bolt-lightning",
+        badgeColor: "text-teal-400 border-teal-500/30 bg-teal-500/10",
+        tags: ["#Nachhaltigkeit", "#Energie", "#Schweiz"]
+      }
+    ];
+
+    // State Variables
+    let activeGrade = "all";
+    let searchQuery = "";
+
+    // DOM Elements
+    const modulesGrid = document.getElementById("modulesGrid");
+    const emptyState = document.getElementById("emptyState");
+    const visibleCount = document.getElementById("visibleCount");
+    const searchInput = document.getElementById("searchInput");
+    const resetFiltersBtn = document.getElementById("resetFiltersBtn");
+
+    function renderModules() {
+      const filtered = geoModules.filter(mod => {
+        const matchesGrade = activeGrade === "all" || mod.grade === activeGrade;
+        const matchesSearch = searchQuery === "" || 
+          mod.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          mod.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          mod.tags.some(t => t.toLowerCase().includes(searchQuery.toLowerCase()));
+
+        return matchesGrade && matchesSearch;
+      });
+
+      visibleCount.textContent = filtered.length;
+
+      if (filtered.length === 0) {
+        modulesGrid.innerHTML = "";
+        emptyState.classList.remove("hidden");
+        return;
+      }
+
+      emptyState.classList.add("hidden");
+
+      modulesGrid.innerHTML = filtered.map(mod => {
+        return `
+          <div class="glass-card rounded-2xl p-6 transition duration-300 flex flex-col justify-between group">
+            <div>
+              <!-- Header Badges -->
+              <div class="flex items-center justify-between mb-4">
+                <span class="text-[11px] font-mono px-2.5 py-0.5 rounded-full border ${mod.badgeColor}">
+                  ${mod.grade}
+                </span>
+                <span class="text-xs text-slate-500 font-mono">HTML Module</span>
+              </div>
+
+              <!-- Title & Icon -->
+              <div class="flex items-start gap-3 mb-3">
+                <div class="w-10 h-10 rounded-xl bg-slate-800/80 border border-white/10 flex items-center justify-center text-cyan-400 text-base flex-shrink-0 group-hover:scale-110 transition duration-300">
+                  <i class="${mod.icon}"></i>
+                </div>
+                <h3 class="text-base font-bold text-white leading-snug group-hover:text-cyan-300 transition">
+                  ${mod.title}
+                </h3>
+              </div>
+
+              <!-- Description -->
+              <p class="text-slate-400 text-xs leading-relaxed mb-4">
+                ${mod.description}
+              </p>
+
+              <!-- Tags -->
+              <div class="flex flex-wrap gap-1.5 mb-6">
+                ${mod.tags.map(t => `
+                  <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800/60 text-slate-400 border border-white/5">
+                    ${t}
+                  </span>
+                `).join('')}
+              </div>
+            </div>
+
+            <!-- Footer Actions -->
+            <div class="pt-4 border-t border-white/5 flex items-center justify-between gap-2">
+              <button onclick="showQrModal('${mod.title}', '${mod.fileName}')" class="p-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/60 text-xs font-medium transition flex items-center gap-1.5" title="QR Code für Schulzimmer-Beamer">
+                <i class="fa-solid fa-qrcode text-sm"></i>
+                <span class="hidden sm:inline">QR-Code</span>
+              </button>
+
+              <a href="${mod.fileName}" class="px-4 py-2 rounded-xl text-xs font-semibold text-white bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 transition shadow-glow-indigo flex items-center gap-2">
+                <span>Modul Öffnen</span>
+                <i class="fa-solid fa-arrow-right text-[10px]"></i>
+              </a>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    document.querySelectorAll(".grade-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".grade-btn").forEach(b => {
+          b.classList.remove("bg-gradient-to-r", "from-indigo-600", "to-cyan-600", "text-white", "shadow-glow-indigo");
+          b.classList.add("text-slate-400");
+        });
+
+        btn.classList.add("bg-gradient-to-r", "from-indigo-600", "to-cyan-600", "text-white", "shadow-glow-indigo");
+        btn.classList.remove("text-slate-400");
+
+        activeGrade = btn.dataset.grade;
+        checkReset();
+        renderModules();
+      });
+    });
+
+    searchInput.addEventListener("input", (e) => {
+      searchQuery = e.target.value.trim();
+      checkReset();
+      renderModules();
+    });
+
+    function checkReset() {
+      if (activeGrade !== "all" || searchQuery !== "") {
+        resetFiltersBtn.classList.remove("hidden");
+      } else {
+        resetFiltersBtn.classList.add("hidden");
+      }
+    }
+
+    resetFiltersBtn.addEventListener("click", () => {
+      activeGrade = "all";
+      searchQuery = "";
+      searchInput.value = "";
+      
+      document.querySelectorAll(".grade-btn")[0].click();
+    });
+
+    function showQrModal(title, fileName) {
+      const modal = document.getElementById("qrModal");
+      const modalTitle = document.getElementById("qrModalTitle");
+      const modalUrl = document.getElementById("qrModalUrl");
+      const qrcodeContainer = document.getElementById("qrcodeCanvas");
+
+      modalTitle.textContent = title;
+      
+      const fullUrl = window.location.origin + window.location.pathname.replace("index.html", "") + fileName.replace("./", "");
+      modalUrl.textContent = fullUrl;
+
+      qrcodeContainer.innerHTML = "";
+
+      try {
+        new QRCode(qrcodeContainer, {
+          text: fullUrl,
+          width: 180,
+          height: 180,
+          colorDark : "#0b0f19",
+          colorLight : "#ffffff",
+          correctLevel : QRCode.CorrectLevel.H
+        });
+      } catch (err) {
+        qrcodeContainer.innerHTML = "<p class='text-xs text-slate-500'>QR Generator geladen.</p>";
+      }
+
+      modal.classList.remove("opacity-0", "pointer-events-none");
+    }
+
+    function closeQrModal() {
+      document.getElementById("qrModal").classList.add("opacity-0", "pointer-events-none");
+    }
+
+    document.getElementById("closeQrModalBtn").addEventListener("click", closeQrModal);
+    document.getElementById("closeQrModalBtn2").addEventListener("click", closeQrModal);
+
+    const teacherModal = document.getElementById("teacherModal");
+    document.getElementById("teacherGuideBtn").addEventListener("click", () => {
+      teacherModal.classList.remove("opacity-0", "pointer-events-none");
+    });
+
+    function closeTeacherModal() {
+      teacherModal.classList.add("opacity-0", "pointer-events-none");
+    }
+
+    document.getElementById("closeTeacherModalBtn").addEventListener("click", closeTeacherModal);
+    document.getElementById("closeTeacherModalBtn2").addEventListener("click", closeTeacherModal);
+
+    // Footer Year
+    document.getElementById("currentYear").textContent = new Date().getFullYear();
+
+    // Initial Execute
+    renderModules();
+  </script>
+</body>
+</html>
