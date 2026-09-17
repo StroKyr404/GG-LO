@@ -126,7 +126,7 @@
           <span class="hidden sm:inline">Für Lehrpersonen</span>
         </button>
 
-        <a href="https://github.com" target="_blank" rel="noopener noreferrer" class="p-2 rounded-lg bg-slate-800/60 text-slate-300 hover:text-white hover:bg-slate-800 border border-white/5 transition flex items-center justify-center">
+        <a href="https://github.com" target="_blank" rel="noopener noreferrer" class="p-2 rounded-lg bg-slate-800/60 text-slate-300 hover:text-white hover:bg-slate-800 border border-white/5 transition">
           <i class="fa-brands fa-github text-base"></i>
         </a>
       </div>
@@ -154,14 +154,11 @@
     </div>
 
     <div class="flex flex-col sm:flex-row gap-4 items-center justify-between mb-8">
-      
-      <!-- Live Search Input -->
       <div class="relative w-full sm:w-80">
         <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-        <input type="text" id="searchInput" placeholder="Suchen (z.B. Plattentektonik, Klima)..." class="w-full pl-9 pr-4 py-2.5 bg-slate-900/90 border border-slate-700/80 rounded-xl text-xs sm:text-sm text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/50">
+        <input type="text" id="searchInput" placeholder="Suchen (z.B. Plattentektonik, Klima)..." class="w-full pl-9 pr-4 py-2.5 bg-slate-900/90 border border-slate-700/80 rounded-xl text-xs sm:text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/40 focus:border-cyan-500/60">
       </div>
 
-      <!-- Grade Filter Controls -->
       <div class="flex items-center gap-1.5 bg-slate-900/90 p-1.5 rounded-xl border border-slate-800 w-full sm:w-auto justify-center" id="gradeFilterGroup">
         <button data-grade="all" class="grade-btn px-4 py-1.5 rounded-lg text-xs font-medium transition bg-gradient-to-r from-indigo-600 to-cyan-600 text-white shadow-glow-indigo">
           Alle Stufen
@@ -178,7 +175,6 @@
       </div>
     </div>
 
-    <!-- Active Count Counter -->
     <div class="flex items-center justify-between mb-4 px-1">
       <div class="text-xs font-mono text-slate-400">
         GEZEIGT: <span id="visibleCount" class="text-cyan-400 font-bold">0</span> MODULE
@@ -192,7 +188,6 @@
       <!-- Injected via JavaScript -->
     </div>
 
-    <!-- Empty State -->
     <div id="emptyState" class="hidden text-center py-20 glass-card rounded-2xl">
       <div class="w-12 h-12 mx-auto mb-3 rounded-xl bg-slate-800 flex items-center justify-center text-slate-400 text-xl border border-slate-700">
         <i class="fa-solid fa-earth-americas"></i>
@@ -220,7 +215,6 @@
         Anwandmöglichtkeit: Projizieren oder von Schüler-Tablets scannen lassen.
       </p>
 
-      <!-- QR Code Container -->
       <div class="bg-white p-4 rounded-xl border border-slate-200 inline-block mx-auto shadow-inner min-w-[180px] min-h-[180px] flex items-center justify-center" id="qrcodeCanvas"></div>
 
       <p id="qrModalUrl" class="text-[11px] font-mono text-slate-400 truncate mt-3 bg-slate-950 p-2 rounded-lg border border-slate-800 select-all">
@@ -299,19 +293,19 @@
       {
         id: "sonneneinstrahlung",
         title: "Sonneneinstrahlung auf die Erde",
-        grade: "1. Sek"
+        grade: "1. Sek",
         duration: "15-20 Min.",
         description: "Interaktive Simulation zum Einfallswinkel der Sonnenstrahlen, Tag- und Nachtgleiche sowie den Beleuchtungszonen der Erde.",
         tags: ["Sonne", "Klima", "Einfallswinkel", "Jahreszeiten"],
-        url: "./Sonneneinstrahlung_auf_Erde.html" 
-      },
+        url: "./Sonneneinstrahlung_auf_Erde.html",
+        badgeColor: "border-cyan-500/30 bg-cyan-500/10 text-cyan-300",
+        icon: "fa-solid fa-sun"
+      }
     ];
 
-    // State Variables
     let activeGrade = "all";
     let searchQuery = "";
 
-    // DOM Elements
     const modulesGrid = document.getElementById("modulesGrid");
     const emptyState = document.getElementById("emptyState");
     const visibleCount = document.getElementById("visibleCount");
@@ -343,7 +337,6 @@
         return `
           <div class="glass-card rounded-2xl p-6 transition duration-300 flex flex-col justify-between group">
             <div>
-              <!-- Header Badges -->
               <div class="flex items-center justify-between mb-4">
                 <span class="text-[11px] font-mono px-2.5 py-0.5 rounded-full border ${mod.badgeColor}">
                   ${mod.grade}
@@ -351,9 +344,8 @@
                 <span class="text-xs text-slate-500 font-mono">HTML Module</span>
               </div>
 
-              <!-- Title & Icon -->
               <div class="flex items-start gap-3 mb-3">
-                <div class="w-10 h-10 rounded-xl bg-slate-800/80 border border-white/10 flex items-center justify-center text-cyan-400 text-base flex-shrink-0 group-hover:scale-110 transition duration-300">
+                <div class="w-10 h-10 rounded-xl bg-slate-800/80 border border-white/10 flex items-center justify-center text-cyan-400 text-base flex-shrink-0 group-hover:scale-110 transition duration-200">
                   <i class="${mod.icon}"></i>
                 </div>
                 <h3 class="text-base font-bold text-white leading-snug group-hover:text-cyan-300 transition">
@@ -361,12 +353,10 @@
                 </h3>
               </div>
 
-              <!-- Description -->
               <p class="text-slate-400 text-xs leading-relaxed mb-4">
                 ${mod.description}
               </p>
 
-              <!-- Tags -->
               <div class="flex flex-wrap gap-1.5 mb-6">
                 ${mod.tags.map(t => `
                   <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800/60 text-slate-400 border border-white/5">
@@ -376,14 +366,13 @@
               </div>
             </div>
 
-            <!-- Footer Actions -->
             <div class="pt-4 border-t border-white/5 flex items-center justify-between gap-2">
-              <button onclick="showQrModal('${mod.title}', '${mod.fileName}')" class="p-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/60 text-xs font-medium transition flex items-center gap-2">
+              <button onclick="showQrModal('${mod.title}', '${mod.url}')" class="p-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/60 text-xs font-medium transition flex items-center gap-2">
                 <i class="fa-solid fa-qrcode text-sm"></i>
                 <span class="hidden sm:inline">QR-Code</span>
               </button>
 
-              <a href="${mod.fileName}" class="px-4 py-2 rounded-xl text-xs font-semibold text-white bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 transition shadow-glow-indigo flex items-center gap-2">
+              <a href="${mod.url}" class="px-4 py-2 rounded-xl text-xs font-semibold text-white bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 transition flex items-center gap-2">
                 <span>Modul Öffnen</span>
                 <i class="fa-solid fa-arrow-right text-[10px]"></i>
               </a>
@@ -427,7 +416,6 @@
       activeGrade = "all";
       searchQuery = "";
       searchInput.value = "";
-      
       document.querySelectorAll(".grade-btn")[0].click();
     });
 
@@ -438,7 +426,7 @@
       const qrcodeContainer = document.getElementById("qrcodeCanvas");
 
       modalTitle.textContent = title;
-      
+
       const fullUrl = window.location.origin + window.location.pathname.replace("index.html", "") + fileName.replace("./", "");
       modalUrl.textContent = fullUrl;
 
@@ -479,10 +467,8 @@
     document.getElementById("closeTeacherModalBtn").addEventListener("click", closeTeacherModal);
     document.getElementById("closeTeacherModalBtn2").addEventListener("click", closeTeacherModal);
 
-    // Footer Year
     document.getElementById("currentYear").textContent = new Date().getFullYear();
 
-    // Initial Execute
     renderModules();
   </script>
 </body>
