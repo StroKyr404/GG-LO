@@ -126,7 +126,7 @@
           <span class="hidden sm:inline">Für Lehrpersonen</span>
         </button>
 
-        <a href="https://github.com" target="_blank" rel="noopener noreferrer" class="p-2 rounded-lg bg-slate-800/60 text-slate-300 hover:text-white hover:bg-slate-800 border border-white/5 transition" title="GitHub Repository">
+        <a href="https://github.com" target="_blank" rel="noopener noreferrer" class="p-2 rounded-lg bg-slate-800/60 text-slate-300 hover:text-white hover:bg-slate-800 border border-white/5 transition flex items-center justify-center">
           <i class="fa-brands fa-github text-base"></i>
         </a>
       </div>
@@ -158,7 +158,7 @@
       <!-- Live Search Input -->
       <div class="relative w-full sm:w-80">
         <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-        <input type="text" id="searchInput" placeholder="Suchen (z.B. Plattentektonik, Klima)..." class="w-full pl-9 pr-4 py-2.5 bg-slate-900/90 border border-slate-700/80 rounded-xl text-xs sm:text-sm text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition">
+        <input type="text" id="searchInput" placeholder="Suchen (z.B. Plattentektonik, Klima)..." class="w-full pl-9 pr-4 py-2.5 bg-slate-900/90 border border-slate-700/80 rounded-xl text-xs sm:text-sm text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/50">
       </div>
 
       <!-- Grade Filter Controls -->
@@ -298,13 +298,13 @@
     const geoModules = [
       {
         id: "tektonik",
-        title: "Plattentektonik & Erdbeben 3D",
+        title: "Sonneneinstrahlung auf Erde",
         grade: "1. Sek",
-        description: "Interaktive Simulation von Plattengrenzen (divergierend, konvergierend, Transformstörung) inklusive Erdbebensektoren und Vulkantypen.",
-        fileName: "./plattentektonik.html",
-        icon: "fa-solid fa-volcano",
-        badgeColor: "text-amber-400 border-amber-500/30 bg-amber-500/10",
-        tags: ["#EndogeneProzesse", "#Vulkanismus", "#3D"]
+        description: "Interaktive Visualisierung der Sonnenstrahlung, der Erdrotation und der Jahreszeiten mit Schwerpunkt auf Einstrahlungswinkel und Tageslänge.",
+        fileName: "./Sonneneinstrahlung_auf_erde.html",
+        icon: "fa-solid fa-sun",
+        badgeColor: "text-yellow-400 border-yellow-500/30 bg-yellow-500/10",
+        tags: ["#Sonne", "#Jahreszeiten", "#Strahlung"]
       },
       {
         id: "klimadiagramm",
@@ -429,7 +429,7 @@
 
             <!-- Footer Actions -->
             <div class="pt-4 border-t border-white/5 flex items-center justify-between gap-2">
-              <button onclick="showQrModal('${mod.title}', '${mod.fileName}')" class="p-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/60 text-xs font-medium transition flex items-center gap-1.5" title="QR Code für Schulzimmer-Beamer">
+              <button onclick="showQrModal('${mod.title}', '${mod.fileName}')" class="p-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/60 text-xs font-medium transition flex items-center gap-2">
                 <i class="fa-solid fa-qrcode text-sm"></i>
                 <span class="hidden sm:inline">QR-Code</span>
               </button>
