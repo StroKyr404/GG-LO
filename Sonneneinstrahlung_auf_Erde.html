@@ -1,0 +1,2522 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Sonneneinstrahlung auf der Erde – Einfach erklärt</title>
+  <style>
+    :root {
+      --bg-dark: #0a0d18;
+      --bg-panel: #13192b;
+      --bg-card: #1c243c;
+      --bg-card-hover: #242e4d;
+      --border-color: #2b3658;
+      --text-main: #f0f4fc;
+      --text-muted: #94a3b8;
+      --accent-sun: #ffc107;
+      --accent-sun-glow: rgba(255, 193, 7, 0.4);
+      --accent-hot: #ef4444;
+      --accent-warm: #f97316;
+      --accent-mild: #eab308;
+      --accent-cool: #06b6d4;
+      --accent-cold: #3b82f6;
+      --accent-polar: #818cf8;
+      --accent-success: #10b981;
+      --accent-success-bg: rgba(16, 185, 129, 0.15);
+      --font-stack: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      font-family: var(--font-stack);
+      line-height: 1.5;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    /* Top Navigation */
+    header {
+      background-color: var(--bg-panel);
+      border-bottom: 1px solid var(--border-color);
+      padding: 0.75rem 1.25rem;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.75rem;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .brand-title {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .brand-title .icon {
+      font-size: 1.7rem;
+      filter: drop-shadow(0 0 10px var(--accent-sun));
+    }
+
+    .brand-title h1 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+
+    .brand-title .subtitle {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      font-weight: 400;
+      display: block;
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .mode-tab-group {
+      display: inline-flex;
+      background: var(--bg-dark);
+      border: 1px solid var(--border-color);
+      border-radius: 9999px;
+      padding: 3px;
+    }
+
+    .mode-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      padding: 0.4rem 0.95rem;
+      border-radius: 9999px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .mode-btn.active {
+      background: var(--accent-sun);
+      color: #000;
+      box-shadow: 0 0 12px var(--accent-sun-glow);
+    }
+
+    .btn-secondary {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      padding: 0.4rem 0.8rem;
+      border-radius: 0.5rem;
+      font-size: 0.82rem;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background 0.2s, color 0.2s;
+    }
+    .btn-secondary:hover {
+      background: var(--bg-card-hover);
+      color: var(--text-main);
+    }
+
+    /* Main Grid Layout */
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 1rem;
+      max-width: 1560px;
+      margin: 0 auto;
+      width: 100%;
+      gap: 1rem;
+    }
+
+    .split-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      flex: 1;
+      min-height: 450px;
+    }
+
+    @media (max-width: 980px) {
+      .split-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .card {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-color);
+      border-radius: 1rem;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.75rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border-color);
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .card-header h2 {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .badge {
+      font-size: 0.78rem;
+      padding: 0.25rem 0.6rem;
+      border-radius: 9999px;
+      background: var(--bg-card);
+      color: var(--accent-sun);
+      border: 1px solid var(--border-color);
+      font-weight: 700;
+    }
+
+    /* Canvas Containers */
+    .canvas-container {
+      flex: 1;
+      position: relative;
+      min-height: 350px;
+      border-radius: 0.75rem;
+      overflow: hidden;
+      background: radial-gradient(circle at 10% 50%, #151a2f 0%, #090c17 100%);
+      touch-action: none;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+
+    .canvas-hint {
+      position: absolute;
+      bottom: 8px;
+      left: 12px;
+      font-size: 0.75rem;
+      color: rgba(255, 255, 255, 0.75);
+      pointer-events: none;
+      background: rgba(0, 0, 0, 0.6);
+      padding: 3px 8px;
+      border-radius: 4px;
+      backdrop-filter: blur(4px);
+    }
+
+    /* Mini Orbit Inset Card */
+    .orbit-inset {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: rgba(13, 18, 33, 0.9);
+      border: 1px solid var(--border-color);
+      border-radius: 0.75rem;
+      padding: 0.6rem 0.75rem;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      max-width: 250px;
+      transition: all 0.2s ease;
+    }
+
+    .orbit-inset-title {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--accent-sun);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .orbit-canvas-wrap {
+      width: 220px;
+      height: 110px;
+      position: relative;
+      cursor: pointer;
+    }
+
+    .orbit-caption {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      line-height: 1.3;
+    }
+
+    /* Controls Bar */
+    .controls-bar {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-color);
+      border-radius: 1rem;
+      padding: 1rem 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.9rem;
+    }
+
+    .controls-main-row {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .slider-group {
+      flex: 2;
+      min-width: 270px;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .slider-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .slider-header span.val {
+      color: var(--accent-sun);
+      font-size: 1.1rem;
+      font-weight: 800;
+    }
+
+    input[type="range"] {
+      -webkit-appearance: none;
+      width: 100%;
+      height: 8px;
+      border-radius: 4px;
+      background: var(--bg-card);
+      outline: none;
+      cursor: pointer;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--accent-sun);
+      cursor: pointer;
+      box-shadow: 0 0 10px var(--accent-sun);
+      border: 2px solid #fff;
+      transition: transform 0.1s;
+    }
+
+    input[type="range"]::-webkit-slider-thumb:hover,
+    input[type="range"]::-webkit-slider-thumb:active {
+      transform: scale(1.15);
+    }
+
+    .slider-ticks {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.68rem;
+      color: var(--text-muted);
+      padding: 0 2px;
+    }
+
+    .presets-group {
+      flex: 3;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      flex-wrap: wrap;
+    }
+
+    .preset-btn {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 0.45rem 0.75rem;
+      border-radius: 0.5rem;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .preset-btn:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--accent-sun);
+    }
+
+    .preset-btn.active {
+      background: rgba(255, 193, 7, 0.2);
+      border-color: var(--accent-sun);
+      color: var(--accent-sun);
+      box-shadow: 0 0 8px rgba(255, 193, 7, 0.25);
+    }
+
+    /* Season Controls */
+    .seasons-bar {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+      background: var(--bg-card);
+      padding: 0.6rem 1rem;
+      border-radius: 0.75rem;
+      border: 1px solid var(--border-color);
+    }
+
+    .tilt-checkbox-wrap {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 700;
+    }
+
+    .tilt-checkbox-wrap input[type="checkbox"] {
+      accent-color: var(--accent-sun);
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+    }
+
+    .season-buttons {
+      display: none;
+      align-items: center;
+      gap: 0.4rem;
+      flex-wrap: wrap;
+    }
+    .season-buttons.show {
+      display: flex;
+    }
+
+    .season-btn {
+      background: var(--bg-dark);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      padding: 0.35rem 0.75rem;
+      border-radius: 0.45rem;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.15s ease;
+    }
+
+    .season-btn:hover {
+      border-color: var(--accent-sun);
+      color: var(--text-main);
+    }
+
+    .season-btn.active {
+      background: var(--accent-sun);
+      color: #000;
+      border-color: var(--accent-sun);
+      font-weight: 800;
+      box-shadow: 0 0 10px var(--accent-sun-glow);
+    }
+
+    /* Live Data Metric Cards */
+    .metrics-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(135px, 1fr));
+      gap: 0.75rem;
+      margin-top: 0.2rem;
+    }
+
+    .metric-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 0.65rem;
+      padding: 0.65rem 0.8rem;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .metric-label {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 0.2rem;
+      font-weight: 600;
+    }
+
+    .metric-value {
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+
+    .metric-sub {
+      font-size: 0.74rem;
+      color: var(--text-muted);
+    }
+
+    /* Thermometer & Heat Scale in Detail View */
+    .detail-overlay-info {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: rgba(19, 25, 43, 0.9);
+      backdrop-filter: blur(8px);
+      border: 1px solid var(--border-color);
+      border-radius: 0.75rem;
+      padding: 0.75rem 0.9rem;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 0.85rem;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.5);
+      z-index: 5;
+    }
+
+    .thermo-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .thermo-tube {
+      width: 14px;
+      height: 95px;
+      background: #20273c;
+      border-radius: 7px;
+      border: 2px solid #64748b;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+    }
+
+    .thermo-fill {
+      width: 100%;
+      height: 100%;
+      border-radius: 0 0 5px 5px;
+      transition: height 0.25s ease, background-color 0.25s ease;
+      background: var(--accent-hot);
+    }
+
+    .thermo-bulb {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: var(--accent-hot);
+      margin-top: -6px;
+      border: 2px solid #64748b;
+      transition: background-color 0.25s ease;
+    }
+
+    .thermo-texts {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .heat-status-title {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      letter-spacing: 0.05em;
+    }
+
+    .heat-status-value {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: var(--accent-hot);
+      transition: color 0.2s ease;
+    }
+
+    .heat-status-desc {
+      font-size: 0.76rem;
+      color: var(--text-muted);
+      max-width: 160px;
+      line-height: 1.35;
+    }
+
+    /* Polar Night Alert Box in Detail View */
+    .polar-night-banner {
+      position: absolute;
+      bottom: 20px;
+      left: 20px;
+      right: 20px;
+      background: rgba(15, 23, 42, 0.92);
+      border: 2px solid var(--accent-cold);
+      border-radius: 0.75rem;
+      padding: 0.85rem 1rem;
+      display: none;
+      align-items: center;
+      gap: 0.85rem;
+      box-shadow: 0 4px 20px rgba(59, 130, 246, 0.35);
+      z-index: 6;
+      backdrop-filter: blur(8px);
+    }
+
+    .polar-night-banner.show {
+      display: flex;
+    }
+
+    .polar-night-banner .p-icon {
+      font-size: 2rem;
+    }
+
+    .polar-night-banner .p-text {
+      font-size: 0.88rem;
+      color: #e2e8f0;
+      line-height: 1.4;
+    }
+
+    .polar-night-banner .p-title {
+      font-weight: 800;
+      color: #93c5fd;
+      font-size: 0.95rem;
+      display: block;
+    }
+
+    /* Guided Wizard (Lernpfad) Section */
+    .wizard-panel {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-color);
+      border-radius: 1rem;
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      transition: all 0.3s ease;
+    }
+
+    .wizard-panel.highlight-pulse {
+      border-color: var(--accent-sun);
+      box-shadow: 0 0 24px var(--accent-sun-glow);
+    }
+
+    .wizard-steps-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: relative;
+      padding: 0 0.75rem;
+    }
+
+    .wizard-steps-track {
+      position: absolute;
+      top: 50%;
+      left: 3rem;
+      right: 3rem;
+      height: 4px;
+      background: var(--bg-card);
+      transform: translateY(-50%);
+      z-index: 1;
+    }
+
+    .wizard-steps-progress {
+      height: 100%;
+      background: var(--accent-sun);
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    .step-node {
+      position: relative;
+      z-index: 2;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--bg-card);
+      border: 2px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .step-node.active {
+      background: var(--bg-panel);
+      border-color: var(--accent-sun);
+      color: var(--accent-sun);
+      box-shadow: 0 0 12px var(--accent-sun-glow);
+      transform: scale(1.1);
+    }
+
+    .step-node.completed {
+      background: var(--accent-success);
+      border-color: var(--accent-success);
+      color: #fff;
+    }
+
+    .wizard-content-box {
+      background: var(--bg-card);
+      border-radius: 0.75rem;
+      padding: 1.25rem;
+      border: 1px solid var(--border-color);
+    }
+
+    .wizard-task-header {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .wizard-task-badge {
+      background: var(--accent-sun);
+      color: #000;
+      font-size: 0.75rem;
+      font-weight: 800;
+      padding: 0.2rem 0.6rem;
+      border-radius: 9999px;
+    }
+
+    .wizard-task-title {
+      font-size: 1.05rem;
+      font-weight: 800;
+    }
+
+    .wizard-instruction {
+      font-size: 0.95rem;
+      color: var(--text-main);
+      margin-bottom: 1rem;
+      line-height: 1.6;
+    }
+
+    .highlight-tag {
+      background: rgba(255, 193, 7, 0.18);
+      color: var(--accent-sun);
+      padding: 0.15rem 0.45rem;
+      border-radius: 0.35rem;
+      font-weight: 700;
+    }
+
+    /* Multiple Choice Questions */
+    .quiz-options {
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      margin-bottom: 1rem;
+    }
+
+    .quiz-option-btn {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-color);
+      border-radius: 0.6rem;
+      padding: 0.8rem 1rem;
+      text-align: left;
+      color: var(--text-main);
+      font-size: 0.92rem;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      line-height: 1.45;
+    }
+
+    .quiz-option-btn:hover {
+      border-color: var(--accent-sun);
+      background: var(--bg-card-hover);
+    }
+
+    .quiz-option-btn.selected {
+      border-color: var(--accent-sun);
+      background: rgba(255, 193, 7, 0.12);
+    }
+
+    .quiz-option-btn.correct {
+      border-color: var(--accent-success);
+      background: var(--accent-success-bg);
+      color: #34d399;
+    }
+
+    .quiz-option-btn.wrong {
+      border-color: var(--accent-hot);
+      background: rgba(239, 68, 68, 0.15);
+      color: #fca5a5;
+    }
+
+    .quiz-feedback {
+      padding: 0.85rem 1rem;
+      border-radius: 0.5rem;
+      font-size: 0.92rem;
+      margin-bottom: 1rem;
+      display: none;
+      line-height: 1.5;
+    }
+
+    .quiz-feedback.success {
+      display: block;
+      background: var(--accent-success-bg);
+      border: 1px solid var(--accent-success);
+      color: #34d399;
+    }
+
+    .quiz-feedback.error {
+      display: block;
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid var(--accent-hot);
+      color: #fca5a5;
+    }
+
+    .wizard-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .btn-primary {
+      background: var(--accent-sun);
+      color: #000;
+      border: none;
+      font-weight: 800;
+      padding: 0.65rem 1.4rem;
+      border-radius: 0.5rem;
+      cursor: pointer;
+      font-size: 0.92rem;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      box-shadow: 0 0 16px var(--accent-sun-glow);
+      transform: translateY(-1px);
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    /* Fill-in-the-blanks Step 4 */
+    .cloze-sentence {
+      font-size: 1.05rem;
+      line-height: 2.3;
+      background: var(--bg-panel);
+      padding: 1.25rem;
+      border-radius: 0.75rem;
+      border: 1px solid var(--border-color);
+      margin-bottom: 1.25rem;
+    }
+
+    .cloze-select {
+      background: var(--bg-card);
+      color: var(--accent-sun);
+      border: 1.5px solid var(--accent-sun);
+      padding: 0.35rem 0.65rem;
+      border-radius: 0.4rem;
+      font-size: 0.95rem;
+      font-weight: 800;
+      cursor: pointer;
+      outline: none;
+    }
+
+    /* Celebration & Certificate Badge */
+    .certificate-card {
+      background: linear-gradient(135deg, #182848 0%, #253b6d 100%);
+      border: 2px solid var(--accent-sun);
+      border-radius: 1rem;
+      padding: 1.6rem;
+      text-align: center;
+      box-shadow: 0 0 30px var(--accent-sun-glow);
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .certificate-card.show {
+      display: flex;
+    }
+
+    .cert-icon {
+      font-size: 3.2rem;
+      filter: drop-shadow(0 0 12px var(--accent-sun));
+    }
+
+    .cert-title {
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: #fff;
+    }
+
+    .cert-desc {
+      font-size: 0.95rem;
+      color: #cbd5e1;
+      max-width: 620px;
+      line-height: 1.6;
+    }
+
+    /* Teacher Modal */
+    .teacher-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0,0,0,0.7);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+
+    .teacher-modal.open {
+      display: flex;
+    }
+
+    .teacher-modal-box {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-color);
+      border-radius: 1rem;
+      padding: 1.5rem;
+      max-width: 560px;
+      width: 100%;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+    }
+
+    .teacher-modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    /* Footer */
+    footer {
+      border-top: 1px solid var(--border-color);
+      padding: 0.75rem 1.25rem;
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      background: var(--bg-panel);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Header -->
+  <header>
+    <div class="brand-title">
+      <span class="icon">☀️</span>
+      <div>
+        <h1>Sonneneinstrahlung auf der Erde</h1>
+        <span class="subtitle">Warum ist es im Norden kälter als am Äquator? Einfach erklärt</span>
+      </div>
+    </div>
+
+    <div class="nav-actions">
+      <div class="mode-tab-group">
+        <button id="btn-mode-wizard" class="mode-btn active" onclick="setAppMode('wizard')">
+          <span>🎓</span> Geführter Lernpfad
+        </button>
+        <button id="btn-mode-free" class="mode-btn" onclick="setAppMode('free')">
+          <span>🔬</span> Frei ausprobieren
+        </button>
+      </div>
+      <button class="btn-secondary" onclick="toggleTeacherInfo()" title="Didaktische Hinweise & Lehrer-Optionen">
+        🔑 Lehrkraft
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Workspace -->
+  <main>
+    <!-- Split Screen: Left Globe vs Right Detail Ground -->
+    <div class="split-grid">
+      
+      <!-- LEFT CARD: Global View -->
+      <div class="card">
+        <div class="card-header">
+          <h2><span>🌍</span> Die Erde von der Seite</h2>
+          <span class="badge" id="lat-badge">Ort: 0° (Äquator)</span>
+        </div>
+        <div class="canvas-container" id="globe-container">
+          <canvas id="globeCanvas"></canvas>
+          
+          <!-- Mini Orbit Inset (Shows orbit around the sun) -->
+          <div class="orbit-inset" id="orbitInset">
+            <div class="orbit-inset-title">
+              <span>🪐 Erdbahn im Weltall</span>
+              <span style="font-size: 0.68rem; color: var(--text-muted); cursor: pointer;" onclick="toggleOrbitHelp()">ℹ️</span>
+            </div>
+            <div class="orbit-canvas-wrap">
+              <canvas id="orbitCanvas" width="220" height="110"></canvas>
+            </div>
+            <div class="orbit-caption" id="orbitCaption">
+              Tippe auf eine Jahreszeit! Die Erdachse zeigt im Raum immer in dieselbe Richtung.
+            </div>
+          </div>
+
+          <div class="canvas-hint">👆 Tippe auf die Erde, um den Ort zu verschieben</div>
+        </div>
+      </div>
+
+      <!-- RIGHT CARD: Local Ground Zoom & Photons -->
+      <div class="card">
+        <div class="card-header">
+          <h2><span>🔍</span> Erdboden ganz nah (Lupe)</h2>
+          <span class="badge" id="zoom-angle-badge">Sonnenstrahlen-Winkel: 90.0°</span>
+        </div>
+        <div class="canvas-container" id="detail-container">
+          <canvas id="detailCanvas"></canvas>
+
+          <!-- Detail Overlay: Thermometer & Intensity Info -->
+          <div class="detail-overlay-info">
+            <div class="thermo-wrap">
+              <div class="thermo-tube">
+                <div class="thermo-fill" id="thermoFill"></div>
+              </div>
+              <div class="thermo-bulb" id="thermoBulb"></div>
+            </div>
+            <div class="thermo-texts">
+              <span class="heat-status-title">Wärme am Boden</span>
+              <span class="heat-status-value" id="heatStatusText">Sehr heiß</span>
+              <span class="heat-status-desc" id="heatStatusDesc">Geballte Sonnenkraft</span>
+            </div>
+          </div>
+
+          <!-- Polar Night Banner (Shown when sun is below horizon) -->
+          <div class="polar-night-banner" id="polarNightBanner">
+            <span class="p-icon">❄️</span>
+            <div class="p-text">
+              <span class="p-title">Polarnacht (Die Sonne geht nicht auf)</span>
+              Hier herrscht Dauer-Dunkelheit und Kälte, weil die Erde von der Sonne weggeneigt ist. Keine Sonnenstrahlen treffen den Boden.
+            </div>
+          </div>
+
+          <div class="canvas-hint">Beobachte: Wie nah oder weit verteilt treffen die Lichtpunkte auf?</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Controls Bar -->
+    <div class="controls-bar" id="controlsBar">
+      
+      <!-- Seasons and Tilt Bar -->
+      <div class="seasons-bar">
+        <label class="tilt-checkbox-wrap">
+          <input type="checkbox" id="tiltCheckbox" onchange="onTiltToggle(this.checked)">
+          <span>🌍 Erdachse schief stellen (23,5°) & Jahreszeiten</span>
+        </label>
+
+        <div class="season-buttons" id="seasonButtons">
+          <button class="season-btn" id="season-june" onclick="setSeason(23.5)">
+            ☀️ Juni (Sommer bei uns)
+          </button>
+          <button class="season-btn active" id="season-equinox" onclick="setSeason(0)">
+            🌱 Frühling / Herbst (Tag & Nacht gleich)
+          </button>
+          <button class="season-btn" id="season-december" onclick="setSeason(-23.5)">
+            ❄️ Dezember (Winter bei uns)
+          </button>
+        </div>
+      </div>
+
+      <!-- Main Slider & Presets Row -->
+      <div class="controls-main-row">
+        
+        <!-- Slider -->
+        <div class="slider-group">
+          <div class="slider-header">
+            <span>Wo auf der Erde bist du?</span>
+            <span class="val" id="latSliderValue">0° (Äquator)</span>
+          </div>
+          <input type="range" id="latitudeSlider" min="-90" max="90" step="1" value="0" oninput="onSliderChange(this.value)">
+          <div class="slider-ticks">
+            <span>Südpol (-90°)</span>
+            <span>Südhalbkugel</span>
+            <span>Äquator (0°)</span>
+            <span>Nordhalbkugel</span>
+            <span>Nordpol (+90°)</span>
+          </div>
+        </div>
+
+        <!-- Presets -->
+        <div class="presets-group">
+          <button class="preset-btn" id="preset-southpole" onclick="applyPreset(-90)">
+            🐧 Südpol (-90°)
+          </button>
+          <button class="preset-btn" id="preset-aus" onclick="applyPreset(-25)">
+            🦘 Australien (-25°)
+          </button>
+          <button class="preset-btn active" id="preset-0" onclick="applyPreset(0)">
+            🌴 Äquator (0°)
+          </button>
+          <button class="preset-btn" id="preset-50" onclick="applyPreset(50)">
+            🏔️ Bei uns / Europa (50° N)
+          </button>
+          <button class="preset-btn" id="preset-66" onclick="applyPreset(66.5)">
+            ❄️ Polarkreis (66,5° N)
+          </button>
+          <button class="preset-btn" id="preset-90" onclick="applyPreset(90)">
+            🧊 Nordpol (+90°)
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Live Metrics Bar in Simple Language -->
+      <div class="metrics-row">
+        <div class="metric-card">
+          <span class="metric-label">Lichtbündel im Weltall</span>
+          <span class="metric-value" style="color: var(--accent-sun);">1 Meter</span>
+          <span class="metric-sub">Immer gleich dick</span>
+        </div>
+        <div class="metric-card">
+          <span class="metric-label">Winkel der Sonnenstrahlen</span>
+          <span class="metric-value" id="metric-angle">90°</span>
+          <span class="metric-sub" id="metric-angle-desc">Steil von oben</span>
+        </div>
+        <div class="metric-card">
+          <span class="metric-label">Fläche am Erdboden</span>
+          <span class="metric-value" id="metric-area">1,0 Meter</span>
+          <span class="metric-sub" id="metric-area-meters">Kaum verteilt</span>
+        </div>
+        <div class="metric-card">
+          <span class="metric-label">Sonnenwärme pro m²</span>
+          <span class="metric-value" id="metric-energy" style="color: var(--accent-hot);">100%</span>
+          <span class="metric-sub">Volle Sonnenkraft</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Guided Wizard Section (Active in Wizard Mode) -->
+    <div class="wizard-panel" id="wizardPanel">
+      
+      <!-- Steps Indicator -->
+      <div class="wizard-steps-nav">
+        <div class="wizard-steps-track">
+          <div class="wizard-steps-progress" id="stepsProgress"></div>
+        </div>
+        <div class="step-node active" id="node-1" onclick="jumpToStep(1)">1</div>
+        <div class="step-node" id="node-2" onclick="jumpToStep(2)">2</div>
+        <div class="step-node" id="node-3" onclick="jumpToStep(3)">3</div>
+        <div class="step-node" id="node-4" onclick="jumpToStep(4)">4</div>
+      </div>
+
+      <!-- Interactive Question Box -->
+      <div class="wizard-content-box" id="wizardBox">
+        <div class="wizard-task-header">
+          <span class="wizard-task-badge" id="stepBadge">Station 1 von 4</span>
+          <span class="wizard-task-title" id="stepTitle">Am Äquator – Maximale Sonnenkraft</span>
+        </div>
+        
+        <p class="wizard-instruction" id="stepInstruction">
+          Schiebe den Regler auf den <span class="highlight-tag">Äquator (0°)</span>. Schau dir das Lichtbündel rechts in der Lupe an.
+        </p>
+
+        <!-- Container for Questions -->
+        <div id="stepInteractionArea"></div>
+
+        <!-- Feedback alert -->
+        <div class="quiz-feedback" id="quizFeedback"></div>
+
+        <!-- Navigation Buttons -->
+        <div class="wizard-actions">
+          <button class="btn-secondary" id="btnPrevStep" onclick="prevStep()" style="visibility: hidden;">
+            ← Zurück
+          </button>
+          <button class="btn-primary" id="btnNextStep" onclick="handleStepAction()">
+            Antwort prüfen ✓
+          </button>
+        </div>
+      </div>
+
+      <!-- Completion Certificate (Unlocked at end) -->
+      <div class="certificate-card" id="certificateCard">
+        <span class="cert-icon">🏆</span>
+        <h3 class="cert-title">Super gemacht! Du bist jetzt Sonnen-Experte!</h3>
+        <p class="cert-desc">
+          Du hast verstanden, wie die runde Erde das Sonnenlicht verteilt:
+          <br><strong>Je weiter nach Norden (oder Süden) man reist, desto flacher treffen die Sonnenstrahlen auf. Dadurch wird dasselbe Lichtbündel über eine viel größere Fläche gestreckt und es wird kühler!</strong>
+        </p>
+        <div style="margin-top: 0.5rem; display: flex; gap: 0.75rem; flex-wrap: wrap; justify-content: center;">
+          <button class="btn-primary" onclick="setAppMode('free')">
+            🔬 Jetzt frei ausprobieren (auch Jahreszeiten & Südhalbkugel)
+          </button>
+          <button class="btn-secondary" onclick="restartWizard()">
+            🔄 Lernpfad nochmals machen
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- Teacher Modal -->
+  <div class="teacher-modal" id="teacherModal">
+    <div class="teacher-modal-box">
+      <div class="teacher-modal-header">
+        <h3 style="display: flex; align-items: center; gap: 0.4rem;">
+          <span>🔑</span> Informationen für Lehrkräfte
+        </h3>
+        <button class="btn-secondary" onclick="toggleTeacherInfo()">✕</button>
+      </div>
+      <div style="font-size: 0.88rem; color: #cbd5e1; display: flex; flex-direction: column; gap: 0.8rem; line-height: 1.6;">
+        <p><strong>Didaktisches Kernziel (Sek I / Lehrplan 21):</strong> Die SuS erkennen das physikalische Grundprinzip: Die Kugelform bedingt, dass parallele Sonnenstrahlen mit zunehmender geografischer Breite in einem flacheren Winkel eintreffen. Dieselbe Strahlungsenergie eines Bündels verteilt sich auf eine immer größere Fläche ($A = A_0 / \sin\alpha$), wodurch die Strahlungsleistung pro Flächeneinheit ($E \sim \sin\alpha$) drastisch abnimmt.</p>
+        
+        <p><strong>Physikalisch korrekte Jahreszeiten:</strong> Im Juni neigt sich die Nordhalbkugel zur Sonne hin (Polartag, senkrechter Sonnenstand am Wendekreis). Im Dezember neigt sich die Nordhalbkugel von der Sonne weg (Polarnacht im Norden, Sommer in Australien). Die Miniatur-Erdbahn veranschaulicht die raumfeste Achse.</p>
+        
+        <p><strong>Schnellsteuerung für den Unterricht:</strong></p>
+        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+          <button class="btn-secondary" onclick="unlockAllSteps(); toggleTeacherInfo();">
+            🔓 Alle 4 Lernstationen freischalten
+          </button>
+          <button class="btn-secondary" onclick="restartWizard(); toggleTeacherInfo();">
+            ⏮️ Lernpfad zurücksetzen
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    Interaktives Unterrichtstool zur Sonneneinstrahlung & Geometrie der Erde • 100% offline-fähig für Tablets, Laptops & Whiteboards
+  </footer>
+
+  <!-- Application Logic -->
+  <script>
+    // ==========================================
+    // 1. STATE & PHYSICAL VARIABLES
+    // ==========================================
+    const state = {
+      latitude: 0,              // -90 to +90 degrees (South Pole to North Pole)
+      beamWidth: 48,            // Constant physical beam width in pixels
+      axialTiltEnabled: false,  // false: vertical (0°), true: 23.5°
+      seasonDeclination: 0,     // +23.5 (June/Summer), 0 (Equinox), -23.5 (December/Winter)
+      
+      // Animated tilt angle (smooth rotation between seasons)
+      currentTilt: 0,           // in radians
+      targetTilt: 0,            // in radians
+
+      mode: 'wizard',           // 'wizard' or 'free'
+      currentStep: 1,
+      completedSteps: [false, false, false, false],
+      isDraggingGlobe: false
+    };
+
+    // Photons animation particles for detail view
+    const photons = [];
+    const NUM_PHOTONS = 32;
+    for (let i = 0; i < NUM_PHOTONS; i++) {
+      photons.push({
+        lane: (i % 8) / 7,
+        progress: (i / NUM_PHOTONS) + Math.random() * 0.04,
+        speed: 0.007 + Math.random() * 0.002
+      });
+    }
+
+    // ==========================================
+    // 2. DOM ELEMENTS
+    // ==========================================
+    const globeCanvas = document.getElementById('globeCanvas');
+    const globeCtx = globeCanvas.getContext('2d');
+    const detailCanvas = document.getElementById('detailCanvas');
+    const detailCtx = detailCanvas.getContext('2d');
+    const orbitCanvas = document.getElementById('orbitCanvas');
+    const orbitCtx = orbitCanvas.getContext('2d');
+
+    const latBadge = document.getElementById('lat-badge');
+    const latSlider = document.getElementById('latitudeSlider');
+    const latSliderValue = document.getElementById('latSliderValue');
+    const zoomAngleBadge = document.getElementById('zoom-angle-badge');
+
+    const metricAngle = document.getElementById('metric-angle');
+    const metricAngleDesc = document.getElementById('metric-angle-desc');
+    const metricArea = document.getElementById('metric-area');
+    const metricAreaMeters = document.getElementById('metric-area-meters');
+    const metricEnergy = document.getElementById('metric-energy');
+
+    const thermoFill = document.getElementById('thermoFill');
+    const thermoBulb = document.getElementById('thermoBulb');
+    const heatStatusText = document.getElementById('heatStatusText');
+    const heatStatusDesc = document.getElementById('heatStatusDesc');
+    const polarNightBanner = document.getElementById('polarNightBanner');
+
+    const wizardPanel = document.getElementById('wizardPanel');
+    const wizardBox = document.getElementById('wizardBox');
+    const stepBadge = document.getElementById('stepBadge');
+    const stepTitle = document.getElementById('stepTitle');
+    const stepInstruction = document.getElementById('stepInstruction');
+    const stepInteractionArea = document.getElementById('stepInteractionArea');
+    const quizFeedback = document.getElementById('quizFeedback');
+    const btnPrevStep = document.getElementById('btnPrevStep');
+    const btnNextStep = document.getElementById('btnNextStep');
+    const certificateCard = document.getElementById('certificateCard');
+    const stepsProgress = document.getElementById('stepsProgress');
+
+    // ==========================================
+    // 3. PHYSICAL & ASTRONOMICAL CALCULATIONS
+    // ==========================================
+    function calculateSolarGeometry() {
+      // Subsolar latitude (latitude where sun is at 90° overhead)
+      const subsolarLat = state.axialTiltEnabled ? state.seasonDeclination : 0;
+      
+      // Solar altitude angle alpha above local horizon
+      let alphaDeg = 90 - Math.abs(state.latitude - subsolarLat);
+      const isPolarNight = alphaDeg <= 0;
+      if (alphaDeg < 0) alphaDeg = 0;
+
+      const alphaRad = (alphaDeg * Math.PI) / 180;
+      
+      // Intensity per unit ground area: sin(alpha)
+      const intensity = isPolarNight ? 0 : Math.sin(alphaRad);
+      
+      // Ground spread length factor: 1 / sin(alpha)
+      const areaFactor = alphaDeg > 1 ? 1 / Math.sin(alphaRad) : 50;
+
+      return {
+        latitude: state.latitude,
+        subsolarLat,
+        alphaDeg,
+        alphaRad,
+        intensity,
+        areaFactor,
+        isPolarNight
+      };
+    }
+
+    function updateTargetTilt() {
+      if (!state.axialTiltEnabled) {
+        state.targetTilt = 0;
+      } else {
+        // When Sun is on the left:
+        // June (+23.5°): North Pole tilts towards the left (towards Sun) -> rotate counter-clockwise (-23.5°)
+        // December (-23.5°): North Pole tilts towards the right (away from Sun) -> rotate clockwise (+23.5°)
+        // Equinox (0°): Tilt in line of sight -> 0°
+        state.targetTilt = -(state.seasonDeclination * Math.PI / 180);
+      }
+    }
+
+    // ==========================================
+    // 4. CANVAS RENDERING - GLOBE VIEW
+    // ==========================================
+    function drawGlobe() {
+      const dpr = window.devicePixelRatio || 1;
+      const w = globeCanvas.clientWidth;
+      const h = globeCanvas.clientHeight;
+      if (!w || !h) return;
+
+      globeCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      globeCtx.clearRect(0, 0, w, h);
+
+      const geom = calculateSolarGeometry();
+
+      // Earth dimensions and position
+      const earthRadius = Math.min(w, h) * 0.36;
+      const centerX = w * 0.58;
+      const centerY = h * 0.50;
+
+      // Background stars
+      globeCtx.fillStyle = "rgba(255, 255, 255, 0.4)";
+      for (let i = 0; i < 26; i++) {
+        const sx = ((i * 137.5) % w);
+        const sy = ((i * 224.3) % h);
+        if (Math.hypot(sx - centerX, sy - centerY) > earthRadius + 25) {
+          globeCtx.fillRect(sx, sy, 1.5, 1.5);
+        }
+      }
+
+      // Draw Sun on the far left
+      const sunGradient = globeCtx.createRadialGradient(0, centerY, 10, 0, centerY, 100);
+      sunGradient.addColorStop(0, "rgba(255, 245, 180, 0.95)");
+      sunGradient.addColorStop(0.35, "rgba(255, 193, 7, 0.6)");
+      sunGradient.addColorStop(1, "rgba(255, 193, 7, 0)");
+      globeCtx.fillStyle = sunGradient;
+      globeCtx.beginPath();
+      globeCtx.arc(0, centerY, 100, 0, Math.PI * 2);
+      globeCtx.fill();
+
+      // Atmospheric Glow
+      const atmoGlow = globeCtx.createRadialGradient(centerX, centerY, earthRadius - 4, centerX, centerY, earthRadius + 20);
+      atmoGlow.addColorStop(0, "rgba(64, 169, 255, 0.35)");
+      atmoGlow.addColorStop(0.6, "rgba(64, 169, 255, 0.12)");
+      atmoGlow.addColorStop(1, "rgba(64, 169, 255, 0)");
+      globeCtx.fillStyle = atmoGlow;
+      globeCtx.beginPath();
+      globeCtx.arc(centerX, centerY, earthRadius + 20, 0, Math.PI * 2);
+      globeCtx.fill();
+
+      // Earth Body (Ocean)
+      const earthGradient = globeCtx.createRadialGradient(
+        centerX - earthRadius * 0.3, centerY - earthRadius * 0.2, earthRadius * 0.1,
+        centerX, centerY, earthRadius
+      );
+      earthGradient.addColorStop(0, "#1d4ed8");
+      earthGradient.addColorStop(0.7, "#1e3a8a");
+      earthGradient.addColorStop(1, "#0f172a");
+
+      globeCtx.save();
+      globeCtx.beginPath();
+      globeCtx.arc(centerX, centerY, earthRadius, 0, Math.PI * 2);
+      globeCtx.fillStyle = earthGradient;
+      globeCtx.fill();
+      globeCtx.clip(); // Clip inside Earth
+
+      // Tilted contents (Continents and Latitude circles)
+      globeCtx.save();
+      globeCtx.translate(centerX, centerY);
+      globeCtx.rotate(state.currentTilt);
+
+      // Continents representation
+      globeCtx.fillStyle = "#15803d";
+      // Northern continents (Europe / Asia / Africa)
+      globeCtx.beginPath();
+      globeCtx.ellipse(-earthRadius * 0.15, -earthRadius * 0.35, earthRadius * 0.35, earthRadius * 0.22, 0.2, 0, Math.PI * 2);
+      // Africa / Australia
+      globeCtx.ellipse(-earthRadius * 0.05, earthRadius * 0.15, earthRadius * 0.3, earthRadius * 0.42, -0.1, 0, Math.PI * 2);
+      globeCtx.fill();
+
+      // Polar Ice Caps
+      globeCtx.fillStyle = "#f8fafc";
+      // North Pole cap
+      globeCtx.beginPath();
+      globeCtx.ellipse(0, -earthRadius + 12, earthRadius * 0.45, earthRadius * 0.16, 0, 0, Math.PI * 2);
+      globeCtx.fill();
+      // South Pole cap
+      globeCtx.beginPath();
+      globeCtx.ellipse(0, earthRadius - 12, earthRadius * 0.45, earthRadius * 0.16, 0, 0, Math.PI * 2);
+      globeCtx.fill();
+
+      // Helper for Latitude circles
+      function drawLatCircle(latDeg, color, label, isDashed = true) {
+        const phi = (latDeg * Math.PI) / 180;
+        const yOffset = -earthRadius * Math.sin(phi);
+        const rSlice = earthRadius * Math.cos(phi);
+
+        globeCtx.beginPath();
+        if (isDashed) globeCtx.setLineDash([4, 4]);
+        else globeCtx.setLineDash([]);
+        globeCtx.ellipse(0, yOffset, rSlice, rSlice * 0.22, 0, 0, Math.PI * 2);
+        globeCtx.strokeStyle = color;
+        globeCtx.lineWidth = 1.5;
+        globeCtx.stroke();
+
+        if (label) {
+          globeCtx.setLineDash([]);
+          globeCtx.fillStyle = color;
+          globeCtx.font = "bold 10px sans-serif";
+          globeCtx.textAlign = "left";
+          globeCtx.fillText(label, -rSlice + 6, yOffset - 4);
+        }
+      }
+
+      drawLatCircle(66.5, "rgba(147, 197, 253, 0.6)", "66,5° N (Polarkreis)");
+      drawLatCircle(50, "rgba(56, 189, 248, 0.7)", "50° N (Europa)");
+      drawLatCircle(23.5, "rgba(255, 215, 0, 0.6)", "23,5° N (Wendekreis)");
+      drawLatCircle(0, "rgba(255, 255, 255, 0.85)", "Äquator (0°)", false);
+      drawLatCircle(-23.5, "rgba(255, 215, 0, 0.6)", "23,5° S (Wendekreis)");
+      drawLatCircle(-66.5, "rgba(147, 197, 253, 0.6)", "66,5° S (Südpolarkreis)");
+
+      globeCtx.restore(); // Restore tilt transform
+
+      // Day / Night shadow (Sun is strictly on the left)
+      const shadowGrad = globeCtx.createLinearGradient(centerX - earthRadius * 0.15, 0, centerX + earthRadius, 0);
+      shadowGrad.addColorStop(0, "rgba(0, 0, 0, 0)");
+      shadowGrad.addColorStop(0.5, "rgba(0, 0, 0, 0.45)");
+      shadowGrad.addColorStop(1, "rgba(0, 0, 0, 0.92)");
+      globeCtx.fillStyle = shadowGrad;
+      globeCtx.fillRect(centerX - earthRadius, centerY - earthRadius, earthRadius * 2, earthRadius * 2);
+
+      globeCtx.restore(); // Unclip
+
+      // Earth Axis Line (Pole to Pole)
+      globeCtx.save();
+      globeCtx.translate(centerX, centerY);
+      globeCtx.rotate(state.currentTilt);
+      globeCtx.beginPath();
+      globeCtx.moveTo(0, -earthRadius - 28);
+      globeCtx.lineTo(0, earthRadius + 28);
+      globeCtx.strokeStyle = "rgba(255, 255, 255, 0.55)";
+      globeCtx.lineWidth = 2;
+      globeCtx.setLineDash([5, 5]);
+      globeCtx.stroke();
+      
+      // Labels
+      globeCtx.setLineDash([]);
+      globeCtx.fillStyle = "#fff";
+      globeCtx.font = "bold 11px sans-serif";
+      globeCtx.textAlign = "center";
+      globeCtx.fillText("Nordpol", 0, -earthRadius - 32);
+      globeCtx.fillText("Südpol", 0, earthRadius + 42);
+      globeCtx.restore();
+
+      // PARALLEL SUNLIGHT RAYS across the illuminated hemisphere
+      globeCtx.strokeStyle = "rgba(255, 220, 100, 0.18)";
+      globeCtx.lineWidth = 1;
+      const numRays = 14;
+      for (let r = 0; r <= numRays; r++) {
+        const ry = (centerY - earthRadius) + (r / numRays) * (earthRadius * 2);
+        const dy = ry - centerY;
+        let rxHit = centerX;
+        if (Math.abs(dy) < earthRadius) {
+          rxHit = centerX - Math.sqrt(earthRadius * earthRadius - dy * dy);
+        }
+        globeCtx.beginPath();
+        globeCtx.moveTo(0, ry);
+        globeCtx.lineTo(rxHit, ry);
+        globeCtx.stroke();
+      }
+
+      // CURRENT OBSERVER LOCATION & SUNBEAM
+      const latRad = (state.latitude * Math.PI) / 180;
+      
+      // Unrotated position on illuminated left limb:
+      const dx0 = -earthRadius * Math.cos(latRad);
+      const dy0 = -earthRadius * Math.sin(latRad);
+
+      // Rotated position with state.currentTilt
+      const obsDx = dx0 * Math.cos(state.currentTilt) - dy0 * Math.sin(state.currentTilt);
+      const obsDy = dx0 * Math.sin(state.currentTilt) + dy0 * Math.cos(state.currentTilt);
+
+      const obsX = centerX + obsDx;
+      const obsY = centerY + obsDy;
+
+      // Check if observer is on the illuminated side (obsDx <= 0)
+      const isInIlluminatedHemisphere = (obsDx <= 0.05 * earthRadius);
+
+      if (isInIlluminatedHemisphere && !geom.isPolarNight) {
+        // Draw the 1-meter highlighted beam bundle
+        const bHalf = state.beamWidth * 0.5;
+        const topY = obsY - bHalf;
+        const botY = obsY + bHalf;
+
+        function getHitX(yPos) {
+          const dy = yPos - centerY;
+          if (Math.abs(dy) <= earthRadius) {
+            return centerX - Math.sqrt(earthRadius * earthRadius - dy * dy);
+          }
+          return centerX;
+        }
+
+        const hitXTop = getHitX(topY);
+        const hitXBot = getHitX(botY);
+
+        globeCtx.save();
+        const beamGrad = globeCtx.createLinearGradient(0, obsY, obsX, obsY);
+        beamGrad.addColorStop(0, "rgba(255, 215, 0, 0.55)");
+        beamGrad.addColorStop(1, "rgba(255, 193, 7, 0.28)");
+
+        globeCtx.fillStyle = beamGrad;
+        globeCtx.beginPath();
+        globeCtx.moveTo(0, topY);
+        globeCtx.lineTo(hitXTop, topY);
+        globeCtx.lineTo(hitXBot, botY);
+        globeCtx.lineTo(0, botY);
+        globeCtx.closePath();
+        globeCtx.fill();
+
+        // Bounding lines
+        globeCtx.strokeStyle = "rgba(255, 235, 59, 0.9)";
+        globeCtx.lineWidth = 2;
+        globeCtx.beginPath();
+        globeCtx.moveTo(0, topY);
+        globeCtx.lineTo(hitXTop, topY);
+        globeCtx.moveTo(0, botY);
+        globeCtx.lineTo(hitXBot, botY);
+        globeCtx.stroke();
+
+        // Surface intercept
+        globeCtx.strokeStyle = "rgba(239, 68, 68, 0.95)";
+        globeCtx.lineWidth = 4;
+        globeCtx.beginPath();
+        globeCtx.moveTo(hitXTop, topY);
+        globeCtx.lineTo(hitXBot, botY);
+        globeCtx.stroke();
+
+        // Beam width bracket
+        globeCtx.strokeStyle = "#ffc107";
+        globeCtx.lineWidth = 2;
+        const bracketX = Math.max(20, Math.min(80, obsX - 70));
+        globeCtx.beginPath();
+        globeCtx.moveTo(bracketX, topY);
+        globeCtx.lineTo(bracketX + 7, topY);
+        globeCtx.moveTo(bracketX, topY);
+        globeCtx.lineTo(bracketX, botY);
+        globeCtx.lineTo(bracketX + 7, botY);
+        globeCtx.stroke();
+
+        globeCtx.fillStyle = "#ffc107";
+        globeCtx.font = "bold 11px sans-serif";
+        globeCtx.textAlign = "left";
+        globeCtx.fillText("1 m", bracketX + 11, obsY + 4);
+        globeCtx.restore();
+      }
+
+      // Observer Marker Pin
+      globeCtx.fillStyle = geom.isPolarNight ? "#60a5fa" : "#ef4444";
+      globeCtx.strokeStyle = "#ffffff";
+      globeCtx.lineWidth = 2;
+      globeCtx.beginPath();
+      globeCtx.arc(obsX, obsY, 7, 0, Math.PI * 2);
+      globeCtx.fill();
+      globeCtx.stroke();
+
+      // Pulsing Ring
+      globeCtx.beginPath();
+      globeCtx.arc(obsX, obsY, 13, 0, Math.PI * 2);
+      globeCtx.strokeStyle = geom.isPolarNight ? "rgba(96, 165, 250, 0.6)" : "rgba(239, 68, 68, 0.55)";
+      globeCtx.lineWidth = 2;
+      globeCtx.stroke();
+
+      // Observer Tag
+      globeCtx.fillStyle = "rgba(15, 23, 42, 0.9)";
+      globeCtx.strokeStyle = "rgba(255, 255, 255, 0.35)";
+      globeCtx.lineWidth = 1;
+      const tagText = `${state.latitude > 0 ? '+' : ''}${state.latitude.toFixed(0)}°`;
+      const tagW = globeCtx.measureText(tagText).width + 16;
+      globeCtx.fillRect(obsX + 12, obsY - 12, tagW, 22);
+      globeCtx.strokeRect(obsX + 12, obsY - 12, tagW, 22);
+
+      globeCtx.fillStyle = "#ffffff";
+      globeCtx.font = "bold 11px sans-serif";
+      globeCtx.textAlign = "left";
+      globeCtx.fillText(tagText, obsX + 20, obsY + 3);
+    }
+
+    // ==========================================
+    // 5. CANVAS RENDERING - DETAIL GROUND VIEW
+    // ==========================================
+    function drawDetail() {
+      const dpr = window.devicePixelRatio || 1;
+      const w = detailCanvas.clientWidth;
+      const h = detailCanvas.clientHeight;
+      if (!w || !h) return;
+
+      detailCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      detailCtx.clearRect(0, 0, w, h);
+
+      const geom = calculateSolarGeometry();
+      const alphaDeg = geom.alphaDeg;
+      const alphaRad = geom.alphaRad;
+
+      const groundY = h * 0.72;
+
+      // Handle Polar Night Mode
+      if (geom.isPolarNight) {
+        polarNightBanner.classList.add('show');
+
+        // Draw dark icy ground
+        const subsoilGrad = detailCtx.createLinearGradient(0, groundY, 0, h);
+        subsoilGrad.addColorStop(0, "#1e293b");
+        subsoilGrad.addColorStop(1, "#0f172a");
+        detailCtx.fillStyle = subsoilGrad;
+        detailCtx.fillRect(0, groundY, w, h - groundY);
+
+        // Snowy surface line
+        detailCtx.strokeStyle = "#93c5fd";
+        detailCtx.lineWidth = 4;
+        detailCtx.beginPath();
+        detailCtx.moveTo(0, groundY);
+        detailCtx.lineTo(w, groundY);
+        detailCtx.stroke();
+
+        // Stars in polar night sky
+        detailCtx.fillStyle = "rgba(255, 255, 255, 0.7)";
+        for (let i = 0; i < 20; i++) {
+          const sx = (i * 47) % w;
+          const sy = (i * 31) % (groundY - 30);
+          detailCtx.fillRect(sx, sy, 1.5, 1.5);
+        }
+
+        // Aurora shimmer
+        const auroraGrad = detailCtx.createLinearGradient(0, 20, w, 80);
+        auroraGrad.addColorStop(0, "rgba(52, 211, 153, 0.15)");
+        auroraGrad.addColorStop(0.5, "rgba(96, 165, 250, 0.12)");
+        auroraGrad.addColorStop(1, "rgba(168, 85, 247, 0.1)");
+        detailCtx.fillStyle = auroraGrad;
+        detailCtx.beginPath();
+        detailCtx.ellipse(w * 0.5, 60, w * 0.45, 35, 0.05, 0, Math.PI * 2);
+        detailCtx.fill();
+
+        return;
+      } else {
+        polarNightBanner.classList.remove('show');
+      }
+
+      // Standard Sunlit Ground Cross Section
+      const subsoilGrad = detailCtx.createLinearGradient(0, groundY, 0, h);
+      subsoilGrad.addColorStop(0, "#2d3748");
+      subsoilGrad.addColorStop(1, "#1a202c");
+      detailCtx.fillStyle = subsoilGrad;
+      detailCtx.fillRect(0, groundY, w, h - groundY);
+
+      // Surface line (grass/soil)
+      detailCtx.strokeStyle = "#48bb78";
+      detailCtx.lineWidth = 3;
+      detailCtx.beginPath();
+      detailCtx.moveTo(0, groundY);
+      detailCtx.lineTo(w, groundY);
+      detailCtx.stroke();
+
+      // Geometry for beam in zoom view
+      const W0 = Math.min(w * 0.22, 105);
+      const centerHitX = w * 0.44;
+
+      const effectiveAlphaRad = Math.max(alphaRad, 0.04);
+      const spreadWidth = Math.min(W0 / Math.sin(effectiveAlphaRad), w * 0.75);
+
+      const hitLeftX = centerHitX - spreadWidth * 0.5;
+      const hitRightX = centerHitX + spreadWidth * 0.5;
+
+      const rayDist = h * 0.85;
+      const rayDx = -Math.cos(effectiveAlphaRad) * rayDist;
+      const rayDy = -Math.sin(effectiveAlphaRad) * rayDist;
+
+      const originLeftX = hitLeftX + rayDx;
+      const originLeftY = groundY + rayDy;
+      const originRightX = hitRightX + rayDx;
+      const originRightY = groundY + rayDy;
+
+      // Draw Sunlight Bundle Polygon
+      const beamGrad = detailCtx.createLinearGradient(
+        originLeftX, originLeftY, centerHitX, groundY
+      );
+      beamGrad.addColorStop(0, "rgba(255, 235, 59, 0.35)");
+      beamGrad.addColorStop(0.7, "rgba(255, 193, 7, 0.28)");
+      beamGrad.addColorStop(1, "rgba(255, 87, 34, 0.15)");
+
+      detailCtx.save();
+      detailCtx.fillStyle = beamGrad;
+      detailCtx.beginPath();
+      detailCtx.moveTo(originLeftX, originLeftY);
+      detailCtx.lineTo(originRightX, originRightY);
+      detailCtx.lineTo(hitRightX, groundY);
+      detailCtx.lineTo(hitLeftX, groundY);
+      detailCtx.closePath();
+      detailCtx.fill();
+
+      // Border lines
+      detailCtx.strokeStyle = "rgba(255, 215, 0, 0.8)";
+      detailCtx.lineWidth = 2;
+      detailCtx.beginPath();
+      detailCtx.moveTo(originLeftX, originLeftY);
+      detailCtx.lineTo(hitLeftX, groundY);
+      detailCtx.moveTo(originRightX, originRightY);
+      detailCtx.lineTo(hitRightX, groundY);
+      detailCtx.stroke();
+
+      // Fixed Beam Width Bracket (Perpendicular)
+      const normX = -Math.sin(effectiveAlphaRad);
+      const normY = Math.cos(effectiveAlphaRad);
+      const midRayX = (originLeftX + originRightX) * 0.5;
+      const midRayY = (originLeftY + originRightY) * 0.5;
+
+      detailCtx.strokeStyle = "#ffc107";
+      detailCtx.lineWidth = 2;
+      detailCtx.beginPath();
+      detailCtx.moveTo(midRayX - normX * (W0 * 0.5), midRayY - normY * (W0 * 0.5));
+      detailCtx.lineTo(midRayX + normX * (W0 * 0.5), midRayY + normY * (W0 * 0.5));
+      detailCtx.stroke();
+
+      detailCtx.fillStyle = "#ffc107";
+      detailCtx.font = "bold 11px sans-serif";
+      detailCtx.textAlign = "center";
+      detailCtx.fillText(`Lichtbündel = 1 Meter`, midRayX, midRayY - 14);
+
+      // Ground Heat Glow
+      const int = geom.intensity;
+      let glowColor, glowSecondary;
+      if (int > 0.8) {
+        glowColor = "rgba(239, 68, 68, 0.9)";
+        glowSecondary = "rgba(249, 115, 22, 0.4)";
+      } else if (int > 0.5) {
+        glowColor = "rgba(249, 115, 22, 0.85)";
+        glowSecondary = "rgba(234, 179, 8, 0.35)";
+      } else if (int > 0.2) {
+        glowColor = "rgba(234, 179, 8, 0.7)";
+        glowSecondary = "rgba(6, 182, 212, 0.25)";
+      } else {
+        glowColor = "rgba(59, 130, 246, 0.85)";
+        glowSecondary = "rgba(147, 197, 253, 0.2)";
+      }
+
+      const groundGlowGrad = detailCtx.createRadialGradient(
+        centerHitX, groundY, 10,
+        centerHitX, groundY, Math.max(spreadWidth * 0.6, 30)
+      );
+      groundGlowGrad.addColorStop(0, glowColor);
+      groundGlowGrad.addColorStop(0.5, glowSecondary);
+      groundGlowGrad.addColorStop(1, "rgba(0,0,0,0)");
+      detailCtx.fillStyle = groundGlowGrad;
+      detailCtx.fillRect(hitLeftX - 20, groundY - 10, spreadWidth + 40, 25);
+
+      // Highlighted Ground Spread Intercept Line
+      detailCtx.strokeStyle = glowColor;
+      detailCtx.lineWidth = 6;
+      detailCtx.beginPath();
+      detailCtx.moveTo(hitLeftX, groundY);
+      detailCtx.lineTo(hitRightX, groundY);
+      detailCtx.stroke();
+
+      // Ground Spread Measurement Bracket
+      detailCtx.strokeStyle = "#fff";
+      detailCtx.lineWidth = 1.5;
+      const bracketY = groundY + 22;
+      detailCtx.beginPath();
+      detailCtx.moveTo(hitLeftX, groundY + 8);
+      detailCtx.lineTo(hitLeftX, bracketY);
+      detailCtx.lineTo(hitRightX, bracketY);
+      detailCtx.lineTo(hitRightX, groundY + 8);
+      detailCtx.stroke();
+
+      detailCtx.fillStyle = "#fff";
+      detailCtx.font = "bold 12px sans-serif";
+      detailCtx.textAlign = "center";
+      const spreadLabel = `${(geom.areaFactor).toFixed(2).replace('.', ',')} Meter Fläche am Boden`;
+      detailCtx.fillText(spreadLabel, centerHitX, bracketY + 18);
+
+      // Angle Arc at the Ground
+      if (alphaDeg > 4 && alphaDeg < 86) {
+        const arcRadius = 40;
+        detailCtx.beginPath();
+        detailCtx.arc(hitLeftX, groundY, arcRadius, Math.PI, Math.PI + effectiveAlphaRad, false);
+        detailCtx.strokeStyle = "#38bdf8";
+        detailCtx.lineWidth = 2;
+        detailCtx.stroke();
+
+        detailCtx.fillStyle = "#38bdf8";
+        detailCtx.font = "bold 11px sans-serif";
+        detailCtx.textAlign = "left";
+        detailCtx.fillText(`Winkel = ${alphaDeg.toFixed(0)}°`, hitLeftX + 46, groundY - 14);
+      }
+
+      // PHOTON PARTICLES ANIMATION
+      for (let p of photons) {
+        p.progress += p.speed;
+        if (p.progress > 1) p.progress -= 1;
+
+        const currHitX = hitLeftX + p.lane * spreadWidth;
+        const currOriginX = currHitX + rayDx;
+        const currOriginY = groundY + rayDy;
+
+        const px = currOriginX + (currHitX - currOriginX) * p.progress;
+        const py = currOriginY + (groundY - currOriginY) * p.progress;
+
+        detailCtx.fillStyle = "#fff";
+        detailCtx.beginPath();
+        detailCtx.arc(px, py, 2.5, 0, Math.PI * 2);
+        detailCtx.fill();
+
+        detailCtx.fillStyle = "rgba(255, 235, 59, 0.75)";
+        detailCtx.beginPath();
+        detailCtx.arc(px, py, 5, 0, Math.PI * 2);
+        detailCtx.fill();
+      }
+
+      detailCtx.restore();
+    }
+
+    // ==========================================
+    // 6. MINI ORBIT INSET (EARTH REVOLUTION AROUND SUN)
+    // ==========================================
+    function drawOrbitInset() {
+      const w = orbitCanvas.width;
+      const h = orbitCanvas.height;
+      orbitCtx.clearRect(0, 0, w, h);
+
+      const oX = w * 0.5;
+      const oY = h * 0.52;
+      const rX = 85;
+      const rY = 36;
+
+      // Draw Orbit Ellipse
+      orbitCtx.beginPath();
+      orbitCtx.ellipse(oX, oY, rX, rY, 0, 0, Math.PI * 2);
+      orbitCtx.strokeStyle = "rgba(255, 255, 255, 0.25)";
+      orbitCtx.lineWidth = 1.5;
+      orbitCtx.setLineDash([3, 3]);
+      orbitCtx.stroke();
+      orbitCtx.setLineDash([]);
+
+      // Draw Sun in Center
+      const sGrad = orbitCtx.createRadialGradient(oX, oY, 2, oX, oY, 14);
+      sGrad.addColorStop(0, "#fff59d");
+      sGrad.addColorStop(0.5, "#ffc107");
+      sGrad.addColorStop(1, "rgba(255, 193, 7, 0)");
+      orbitCtx.fillStyle = sGrad;
+      orbitCtx.beginPath();
+      orbitCtx.arc(oX, oY, 14, 0, Math.PI * 2);
+      orbitCtx.fill();
+
+      // 4 Orbit Stations
+      // Fixed space tilt: in space, the Earth axis always tilts towards the left-top (e.g. -23.5°)
+      const spaceTilt = -23.5 * Math.PI / 180;
+
+      const stations = [
+        { name: "Juni", decl: 23.5, x: oX - rX, y: oY, label: "Juni (Sommer)", active: state.seasonDeclination > 10 && state.axialTiltEnabled },
+        { name: "Sept", decl: 0, x: oX, y: oY - rY, label: "Herbst", active: Math.abs(state.seasonDeclination) <= 10 && state.axialTiltEnabled },
+        { name: "Dez", decl: -23.5, x: oX + rX, y: oY, label: "Dezember (Winter)", active: state.seasonDeclination < -10 && state.axialTiltEnabled },
+        { name: "März", decl: 0, x: oX, y: oY + rY, label: "Frühling", active: false }
+      ];
+
+      for (let st of stations) {
+        // Draw Earth dot
+        orbitCtx.save();
+        orbitCtx.translate(st.x, st.y);
+
+        // Highlight ring if active
+        if (st.active) {
+          orbitCtx.beginPath();
+          orbitCtx.arc(0, 0, 10, 0, Math.PI * 2);
+          orbitCtx.strokeStyle = "var(--accent-sun)";
+          orbitCtx.lineWidth = 2;
+          orbitCtx.stroke();
+        }
+
+        // Earth globe
+        orbitCtx.fillStyle = "#3b82f6";
+        orbitCtx.beginPath();
+        orbitCtx.arc(0, 0, 6, 0, Math.PI * 2);
+        orbitCtx.fill();
+
+        // Earth axis (always pointing in the EXACT SAME DIRECTION in space!)
+        orbitCtx.rotate(spaceTilt);
+        orbitCtx.strokeStyle = "#fff";
+        orbitCtx.lineWidth = 1.5;
+        orbitCtx.beginPath();
+        orbitCtx.moveTo(0, -9);
+        orbitCtx.lineTo(0, 9);
+        orbitCtx.stroke();
+
+        // North pole dot
+        orbitCtx.fillStyle = "#ef4444";
+        orbitCtx.beginPath();
+        orbitCtx.arc(0, -8, 1.8, 0, Math.PI * 2);
+        orbitCtx.fill();
+
+        orbitCtx.restore();
+
+        // Label
+        orbitCtx.fillStyle = st.active ? "var(--accent-sun)" : "var(--text-muted)";
+        orbitCtx.font = st.active ? "bold 9px sans-serif" : "9px sans-serif";
+        orbitCtx.textAlign = "center";
+        
+        let labelY = st.y + 16;
+        if (st.name === "Sept") labelY = st.y - 10;
+        orbitCtx.fillText(st.name, st.x, labelY);
+      }
+    }
+
+    // Click handler for Orbit Inset
+    orbitCanvas.addEventListener('click', (e) => {
+      if (!state.axialTiltEnabled) {
+        document.getElementById('tiltCheckbox').checked = true;
+        onTiltToggle(true);
+      }
+      const rect = orbitCanvas.getBoundingClientRect();
+      const clickX = e.clientX - rect.left;
+      const w = orbitCanvas.clientWidth;
+      
+      // If clicked left half -> June
+      if (clickX < w * 0.35) {
+        setSeason(23.5);
+      } else if (clickX > w * 0.65) {
+        setSeason(-23.5);
+      } else {
+        setSeason(0);
+      }
+    });
+
+    function toggleOrbitHelp() {
+      alert("🪐 Die Erdbahn:\n\nIm Weltall zeigt die Erdachse immer in dieselbe Richtung (zum Polarstern).\n\nWeil die Erde aber im Jahr um die Sonne wandert, zeigt im Juni die Nordhalbkugel zur Sonne (Sommer bei uns). Im Dezember ist sie von der Sonne weggeneigt (Winter bei uns)!");
+    }
+
+    // ==========================================
+    // 7. UI UPDATE & METRICS (LEICHTE SPRACHE)
+    // ==========================================
+    function updateMetricsUI() {
+      const geom = calculateSolarGeometry();
+      const alpha = geom.alphaDeg;
+      const intensity = geom.intensity;
+      const factor = geom.areaFactor;
+
+      // Location Name
+      let locName = "";
+      if (state.latitude === 0) locName = " (Äquator)";
+      else if (state.latitude === 50) locName = " (Bei uns / Europa)";
+      else if (state.latitude === 66.5) locName = " (Polarkreis)";
+      else if (state.latitude === 90) locName = " (Nordpol)";
+      else if (state.latitude === -25) locName = " (Australien)";
+      else if (state.latitude === -90) locName = " (Südpol)";
+
+      const latSign = state.latitude > 0 ? "+" : "";
+      latBadge.textContent = `Ort: ${latSign}${state.latitude.toFixed(0)}°${locName}`;
+      latSlider.value = state.latitude;
+      latSliderValue.textContent = `${latSign}${state.latitude.toFixed(0)}°${locName}`;
+
+      zoomAngleBadge.textContent = `Sonnenstrahlen-Winkel: ${alpha.toFixed(1)}°`;
+
+      metricAngle.textContent = `${alpha.toFixed(1)}°`;
+      if (geom.isPolarNight) {
+        metricAngleDesc.textContent = "Sonne unter Horizont";
+      } else if (alpha >= 75) {
+        metricAngleDesc.textContent = "Steil von oben (Mittagshitze)";
+      } else if (alpha >= 40) {
+        metricAngleDesc.textContent = "Mittlere Höhe (Angenehm)";
+      } else if (alpha >= 15) {
+        metricAngleDesc.textContent = "Flach am Horizont";
+      } else {
+        metricAngleDesc.textContent = "Ganz flach (Streiflicht)";
+      }
+
+      if (geom.isPolarNight) {
+        metricArea.textContent = "0 Meter";
+        metricAreaMeters.textContent = "Kein Sonnenlicht";
+        metricEnergy.textContent = "0%";
+        metricEnergy.style.color = "var(--accent-cold)";
+      } else {
+        metricArea.textContent = `${factor.toFixed(2).replace('.', ',')} Meter`;
+        metricAreaMeters.textContent = `${factor.toFixed(1).replace('.', ',')}× gestreckt`;
+
+        const energyPercent = Math.round(intensity * 100);
+        metricEnergy.textContent = `${energyPercent}%`;
+
+        if (energyPercent > 80) metricEnergy.style.color = "var(--accent-hot)";
+        else if (energyPercent > 50) metricEnergy.style.color = "var(--accent-warm)";
+        else if (energyPercent > 20) metricEnergy.style.color = "var(--accent-mild)";
+        else metricEnergy.style.color = "var(--accent-cold)";
+      }
+
+      // Thermometer update
+      const fillHeightPercent = geom.isPolarNight ? 5 : Math.max(8, Math.round(intensity * 100));
+      thermoFill.style.height = `${fillHeightPercent}%`;
+
+      let thermoColor = "var(--accent-hot)";
+      let statusWord = "Sehr heiß";
+      let statusDetail = "Geballte Sonnenkraft auf kleiner Fläche";
+
+      if (geom.isPolarNight) {
+        thermoColor = "var(--accent-cold)";
+        statusWord = "Dauerfrost";
+        statusDetail = "Keine Sonne (Polarnacht)";
+      } else if (intensity > 0.8) {
+        thermoColor = "var(--accent-hot)";
+        statusWord = "Sehr heiß";
+        statusDetail = "Licht eng gebündelt";
+      } else if (intensity > 0.5) {
+        thermoColor = "var(--accent-warm)";
+        statusWord = "Angenehm warm";
+        statusDetail = "Licht mäßig verteilt";
+      } else if (intensity > 0.2) {
+        thermoColor = "var(--accent-mild)";
+        statusWord = "Kühl";
+        statusDetail = "Licht stark verteilt";
+      } else {
+        thermoColor = "var(--accent-cold)";
+        statusWord = "Eiskalt";
+        statusDetail = "Sehr flaches Streiflicht";
+      }
+
+      thermoFill.style.backgroundColor = thermoColor;
+      thermoBulb.style.backgroundColor = thermoColor;
+      heatStatusText.textContent = statusWord;
+      heatStatusText.style.color = thermoColor;
+      heatStatusDesc.textContent = statusDetail;
+
+      // Highlight Presets
+      document.querySelectorAll('.preset-btn').forEach(btn => btn.classList.remove('active'));
+      if (state.latitude === 0) document.getElementById('preset-0')?.classList.add('active');
+      else if (Math.abs(state.latitude - 50) < 0.5) document.getElementById('preset-50')?.classList.add('active');
+      else if (Math.abs(state.latitude - 66.5) < 0.5) document.getElementById('preset-66')?.classList.add('active');
+      else if (state.latitude === 90) document.getElementById('preset-90')?.classList.add('active');
+      else if (state.latitude === -25) document.getElementById('preset-aus')?.classList.add('active');
+      else if (state.latitude === -90) document.getElementById('preset-southpole')?.classList.add('active');
+
+      updateTargetTilt();
+    }
+
+    // ==========================================
+    // 8. INPUT HANDLERS & INTERACTION
+    // ==========================================
+    function onSliderChange(val) {
+      state.latitude = parseFloat(val);
+      updateMetricsUI();
+      checkAutoWizardProgression();
+    }
+
+    function applyPreset(lat) {
+      state.latitude = lat;
+      updateMetricsUI();
+      checkAutoWizardProgression();
+    }
+
+    function onTiltToggle(enabled) {
+      state.axialTiltEnabled = enabled;
+      const seasonButtons = document.getElementById('seasonButtons');
+      if (enabled) {
+        seasonButtons.classList.add('show');
+        if (state.seasonDeclination === 0) state.seasonDeclination = 23.5; // default to summer to see effect
+        setSeason(state.seasonDeclination);
+      } else {
+        seasonButtons.classList.remove('show');
+        state.seasonDeclination = 0;
+      }
+      updateTargetTilt();
+      updateMetricsUI();
+    }
+
+    function setSeason(declination) {
+      state.seasonDeclination = declination;
+      document.querySelectorAll('.season-btn').forEach(b => b.classList.remove('active'));
+      if (declination > 10) {
+        document.getElementById('season-june')?.classList.add('active');
+        document.getElementById('orbitCaption').textContent = "Juni: Die Nordhalbkugel ist ZUR Sonne geneigt. Bei uns ist Sommer!";
+      } else if (declination < -10) {
+        document.getElementById('season-december')?.classList.add('active');
+        document.getElementById('orbitCaption').textContent = "Dezember: Die Nordhalbkugel ist WEG von der Sonne geneigt. Bei uns ist Winter!";
+      } else {
+        document.getElementById('season-equinox')?.classList.add('active');
+        document.getElementById('orbitCaption').textContent = "Frühling & Herbst: Tag und Nacht sind überall auf der Erde gleich lang.";
+      }
+      updateTargetTilt();
+      updateMetricsUI();
+    }
+
+    function setAppMode(mode) {
+      state.mode = mode;
+      document.getElementById('btn-mode-wizard').classList.toggle('active', mode === 'wizard');
+      document.getElementById('btn-mode-free').classList.toggle('active', mode === 'free');
+
+      if (mode === 'wizard') {
+        wizardPanel.style.display = 'flex';
+        renderWizardStep(state.currentStep);
+      } else {
+        wizardPanel.style.display = 'none';
+        // Auto-enable tilt option in free mode so students can play with seasons
+        document.getElementById('tiltCheckbox').checked = true;
+        onTiltToggle(true);
+      }
+    }
+
+    function toggleTeacherInfo() {
+      const modal = document.getElementById('teacherModal');
+      modal.classList.toggle('open');
+    }
+
+    // Touch and Drag on Globe Canvas
+    function handleGlobePointer(evt) {
+      const rect = globeCanvas.getBoundingClientRect();
+      const clientX = evt.clientX !== undefined ? evt.clientX : (evt.touches ? evt.touches[0].clientX : null);
+      const clientY = evt.clientY !== undefined ? evt.clientY : (evt.touches ? evt.touches[0].clientY : null);
+      if (clientX === null || clientY === null) return;
+
+      const x = clientX - rect.left;
+      const y = clientY - rect.top;
+
+      const w = globeCanvas.clientWidth;
+      const h = globeCanvas.clientHeight;
+      const centerX = w * 0.58;
+      const centerY = h * 0.50;
+
+      const dx = x - centerX;
+      const dy = y - centerY;
+
+      // Unrotate pointer by current animated tilt angle
+      const dxUnrot = dx * Math.cos(state.currentTilt) + dy * Math.sin(state.currentTilt);
+      const dyUnrot = -dx * Math.sin(state.currentTilt) + dy * Math.cos(state.currentTilt);
+
+      // Convert to latitude (-dyUnrot is North, +dyUnrot is South)
+      let phi = Math.atan2(-dyUnrot, -dxUnrot);
+      let latDeg = (phi * 180) / Math.PI;
+
+      // Clamp between -90 and +90
+      if (latDeg < -90) latDeg = -90;
+      if (latDeg > 90) latDeg = 90;
+
+      state.latitude = Math.round(latDeg);
+      updateMetricsUI();
+      checkAutoWizardProgression();
+    }
+
+    globeCanvas.addEventListener('pointerdown', (e) => {
+      state.isDraggingGlobe = true;
+      globeCanvas.setPointerCapture(e.pointerId);
+      handleGlobePointer(e);
+    });
+
+    globeCanvas.addEventListener('pointermove', (e) => {
+      if (state.isDraggingGlobe) {
+        handleGlobePointer(e);
+      }
+    });
+
+    globeCanvas.addEventListener('pointerup', (e) => {
+      state.isDraggingGlobe = false;
+      try { globeCanvas.releasePointerCapture(e.pointerId); } catch(err) {}
+    });
+
+    globeCanvas.addEventListener('pointercancel', () => {
+      state.isDraggingGlobe = false;
+    });
+
+    // ==========================================
+    // 9. DIDACTIC WIZARD LOGIC (LEICHTE SPRACHE)
+    // ==========================================
+    const wizardTasks = [
+      {
+        id: 1,
+        title: "Station 1: Am Äquator – Die größte Hitze",
+        targetLat: 0,
+        instruction: `Schiebe den Regler auf den <span class="highlight-tag">Äquator (0°)</span>. Schau dir das Lichtbündel rechts in der Lupe an.`,
+        question: `Wie treffen die Sonnenstrahlen am Äquator auf die Erde?`,
+        options: [
+          { text: "Steil von oben (senkrecht): Das Licht bleibt eng zusammen und heizt den Boden stark auf.", correct: true },
+          { text: "Ganz flach: Das Licht wird über viele Meter Boden gestreckt.", correct: false },
+          { text: "Die Sonnenstrahlen treffen gar nicht auf die Erde.", correct: false }
+        ],
+        successText: "Richtig! Am Äquator treffen die Strahlen steil von oben auf. Das 1 Meter dicke Lichtbündel trifft genau 1 Meter Boden. Die gesamte Sonnenwärme ist auf einem Fleck gebündelt – deshalb ist es dort sehr heiß!"
+      },
+      {
+        id: 2,
+        title: "Station 2: Reise zu uns nach Europa – Es wird kühler",
+        targetLat: 50,
+        instruction: `Schiebe den Regler nach Norden auf <span class="highlight-tag">Bei uns / Europa (50° N)</span>. Vergleiche die Fläche am Boden mit dem Äquator.`,
+        question: `Was passiert mit dem Sonnenlicht am Boden, wenn wir nach Norden wandern?`,
+        options: [
+          { text: "Die Strahlen treffen schräger auf. Der Lichtfleck am Boden wird breiter (gestreckt) und es wird kühler.", correct: true },
+          { text: "Die Strahlen werden steiler, der Lichtfleck wird kleiner und es wird noch heißer.", correct: false },
+          { text: "Die Fläche am Boden bleibt genau gleich groß wie am Äquator.", correct: false }
+        ],
+        successText: "Genau richtig! Weil die Erde rund ist, treffen die parallelen Sonnenstrahlen im Norden schräg auf. Derselbe 1-Meter-Lichtstrahl wird am Boden auf über 1,5 Meter gestreckt. Die Wärme verteilt sich auf mehr Fläche – es wird kühler!"
+      },
+      {
+        id: 3,
+        title: "Station 3: In der Polarregion – Ewiges Eis",
+        targetLat: 75,
+        instruction: `Reise ganz nach Norden in die <span class="highlight-tag">Polarregion (über 70° N)</span>. Achte auf das Thermometer und die riesige Fläche.`,
+        question: `Warum ist es an den Polen so kalt, obwohl die Sonne scheint?`,
+        options: [
+          { text: "Weil die Strahlen ganz flach streifen: Dieselbe Sonnenwärme verteilt sich auf eine riesige Fläche.", correct: true },
+          { text: "Weil die Sonne am Nordpol kein Licht aussendet.", correct: false },
+          { text: "Weil die Sonnenstrahlen im Weltall kalt werden.", correct: false }
+        ],
+        successText: "Hervorragend erkannt! Bei flachem Winkel wird das Sonnenlicht riesig in die Länge gezogen. Pro Quadratmeter kommt kaum noch Wärme an. Deshalb bleibt es eisig kalt!"
+      },
+      {
+        id: 4,
+        title: "Station 4: Das Forscher-Fazit (Der Merksatz)",
+        instruction: `Setze die richtigen Wörter in die Lücken ein, um die Naturregel aufzuschreiben:`,
+        isCloze: true,
+        successText: "Großartig! Du hast das Geheimnis der Sonnenstrahlen auf unserer runden Erde verstanden!"
+      }
+    ];
+
+    let selectedOptionIndex = null;
+
+    function renderWizardStep(stepNum) {
+      state.currentStep = stepNum;
+      const task = wizardTasks[stepNum - 1];
+
+      stepsProgress.style.width = `${((stepNum - 1) / 3) * 100}%`;
+      for (let i = 1; i <= 4; i++) {
+        const node = document.getElementById(`node-${i}`);
+        node?.classList.toggle('active', i === stepNum);
+        node?.classList.toggle('completed', state.completedSteps[i - 1]);
+      }
+
+      stepBadge.textContent = `Station ${stepNum} von 4`;
+      stepTitle.textContent = task.title;
+      stepInstruction.innerHTML = task.instruction;
+
+      quizFeedback.className = "quiz-feedback";
+      quizFeedback.style.display = "none";
+      btnPrevStep.style.visibility = stepNum > 1 ? "visible" : "hidden";
+
+      selectedOptionIndex = null;
+      stepInteractionArea.innerHTML = "";
+
+      if (task.isCloze) {
+        renderClozeTest();
+        btnNextStep.textContent = "Merksatz prüfen ✓";
+        btnNextStep.disabled = false;
+      } else {
+        const qTitle = document.createElement('div');
+        qTitle.style.fontWeight = "700";
+        qTitle.style.fontSize = "0.95rem";
+        qTitle.style.marginBottom = "0.6rem";
+        qTitle.textContent = task.question;
+        stepInteractionArea.appendChild(qTitle);
+
+        const optionsWrap = document.createElement('div');
+        optionsWrap.className = "quiz-options";
+
+        task.options.forEach((opt, idx) => {
+          const btn = document.createElement('button');
+          btn.className = "quiz-option-btn";
+          btn.innerHTML = `<span style="font-weight: 800; color: var(--accent-sun);">${String.fromCharCode(65 + idx)})</span> <span>${opt.text}</span>`;
+          btn.onclick = () => selectQuizOption(idx);
+          optionsWrap.appendChild(btn);
+        });
+
+        stepInteractionArea.appendChild(optionsWrap);
+        btnNextStep.textContent = "Antwort prüfen ✓";
+        btnNextStep.disabled = true;
+      }
+
+      certificateCard.classList.remove('show');
+      wizardBox.style.display = 'block';
+    }
+
+    function selectQuizOption(idx) {
+      selectedOptionIndex = idx;
+      const buttons = document.querySelectorAll('.quiz-option-btn');
+      buttons.forEach((b, i) => {
+        b.classList.toggle('selected', i === idx);
+        b.classList.remove('correct', 'wrong');
+      });
+      quizFeedback.style.display = "none";
+      btnNextStep.disabled = false;
+    }
+
+    function handleStepAction() {
+      const task = wizardTasks[state.currentStep - 1];
+
+      if (btnNextStep.textContent.includes("Nächste Station")) {
+        if (state.currentStep < 4) {
+          renderWizardStep(state.currentStep + 1);
+        }
+        return;
+      }
+
+      if (task.isCloze) {
+        checkClozeTest();
+        return;
+      }
+
+      const selected = task.options[selectedOptionIndex];
+      const buttons = document.querySelectorAll('.quiz-option-btn');
+
+      if (selected && selected.correct) {
+        buttons[selectedOptionIndex].classList.add('correct');
+        quizFeedback.className = "quiz-feedback success";
+        quizFeedback.textContent = task.successText;
+        quizFeedback.style.display = "block";
+
+        state.completedSteps[state.currentStep - 1] = true;
+        document.getElementById(`node-${state.currentStep}`)?.classList.add('completed');
+
+        btnNextStep.textContent = state.currentStep < 4 ? "Nächste Station →" : "Abschließen 🎉";
+      } else {
+        if (selectedOptionIndex !== null) {
+          buttons[selectedOptionIndex].classList.add('wrong');
+        }
+        quizFeedback.className = "quiz-feedback error";
+        quizFeedback.textContent = "Noch nicht ganz richtig! Schau dir die Bündelbreite und die gestreckte Bodenfläche in der Lupe an und versuche es noch einmal.";
+        quizFeedback.style.display = "block";
+      }
+    }
+
+    function renderClozeTest() {
+      const clozeBox = document.createElement('div');
+      clozeBox.className = "cloze-sentence";
+      clozeBox.innerHTML = `
+        „Je weiter 
+        <select class="cloze-select" id="cloze-1">
+          <option value="">(wählen...)</option>
+          <option value="nördlich">nördlich</option>
+          <option value="mittig">mittig</option>
+        </select> 
+        man auf der Erde ist, desto 
+        <select class="cloze-select" id="cloze-2">
+          <option value="">(wählen...)</option>
+          <option value="steiler">steiler</option>
+          <option value="flacher">flacher</option>
+        </select> 
+        treffen die Sonnenstrahlen auf. Dadurch wird das Sonnenlicht am Erdboden auf eine 
+        <select class="cloze-select" id="cloze-3">
+          <option value="">(wählen...)</option>
+          <option value="größere">größere</option>
+          <option value="kleinere">kleinere</option>
+        </select> 
+        Fläche gestreckt, und es kommt 
+        <select class="cloze-select" id="cloze-4">
+          <option value="">(wählen...)</option>
+          <option value="mehr">mehr</option>
+          <option value="weniger">weniger</option>
+        </select> 
+        Wärme pro Quadratmeter an.“
+      `;
+      stepInteractionArea.appendChild(clozeBox);
+    }
+
+    function checkClozeTest() {
+      const a1 = document.getElementById('cloze-1').value;
+      const a2 = document.getElementById('cloze-2').value;
+      const a3 = document.getElementById('cloze-3').value;
+      const a4 = document.getElementById('cloze-4').value;
+
+      if (a1 === "nördlich" && a2 === "flacher" && a3 === "größere" && a4 === "weniger") {
+        quizFeedback.className = "quiz-feedback success";
+        quizFeedback.textContent = "Hervorragend! Du hast den Merksatz perfekt ausgefüllt!";
+        quizFeedback.style.display = "block";
+
+        state.completedSteps[3] = true;
+        document.getElementById('node-4')?.classList.add('completed');
+        stepsProgress.style.width = "100%";
+
+        setTimeout(() => {
+          wizardBox.style.display = 'none';
+          certificateCard.classList.add('show');
+          launchConfetti();
+        }, 800);
+      } else {
+        quizFeedback.className = "quiz-feedback error";
+        quizFeedback.textContent = "Überlege nochmals: Wenn du nach Norden gehst, wird der Winkel flacher, die Fläche größer und die Wärme weniger.";
+        quizFeedback.style.display = "block";
+      }
+    }
+
+    function prevStep() {
+      if (state.currentStep > 1) {
+        renderWizardStep(state.currentStep - 1);
+      }
+    }
+
+    function jumpToStep(stepNum) {
+      renderWizardStep(stepNum);
+    }
+
+    function restartWizard() {
+      state.completedSteps = [false, false, false, false];
+      state.latitude = 0;
+      state.axialTiltEnabled = false;
+      document.getElementById('tiltCheckbox').checked = false;
+      onTiltToggle(false);
+      updateMetricsUI();
+      setAppMode('wizard');
+      renderWizardStep(1);
+    }
+
+    function unlockAllSteps() {
+      state.completedSteps = [true, true, true, true];
+      for (let i = 1; i <= 4; i++) {
+        document.getElementById(`node-${i}`)?.classList.add('completed');
+      }
+      stepsProgress.style.width = "100%";
+      renderWizardStep(4);
+    }
+
+    function checkAutoWizardProgression() {
+      if (state.mode !== 'wizard') return;
+      const target = wizardTasks[state.currentStep - 1]?.targetLat;
+      if (target !== undefined && Math.abs(state.latitude - target) < 4) {
+        wizardPanel.classList.add('highlight-pulse');
+        setTimeout(() => wizardPanel.classList.remove('highlight-pulse'), 1200);
+      }
+    }
+
+    function launchConfetti() {
+      const colors = ['#ffc107', '#ef4444', '#3b82f6', '#10b981', '#f59e0b'];
+      for (let i = 0; i < 60; i++) {
+        const conf = document.createElement('div');
+        conf.style.position = 'fixed';
+        conf.style.zIndex = '9999';
+        conf.style.width = `${Math.random() * 8 + 6}px`;
+        conf.style.height = `${Math.random() * 12 + 6}px`;
+        conf.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+        conf.style.left = `${Math.random() * 100}vw`;
+        conf.style.top = '-20px';
+        conf.style.borderRadius = '2px';
+        conf.style.pointerEvents = 'none';
+        conf.style.transition = `transform ${Math.random() * 2 + 1.5}s ease-out, top ${Math.random() * 2 + 1.5}s ease-out, opacity 2s`;
+        document.body.appendChild(conf);
+
+        setTimeout(() => {
+          conf.style.top = `${Math.random() * 80 + 20}vh`;
+          conf.style.transform = `rotate(${Math.random() * 720}deg) scale(0.8)`;
+          conf.style.opacity = '0';
+        }, 20);
+
+        setTimeout(() => conf.remove(), 2500);
+      }
+    }
+
+    // ==========================================
+    // 10. ANIMATION & RESIZE LOOP
+    // ==========================================
+    function resizeCanvases() {
+      const dpr = window.devicePixelRatio || 1;
+      const globeBox = document.getElementById('globe-container');
+      const detailBox = document.getElementById('detail-container');
+      if (!globeBox || !detailBox) return;
+
+      const gw = globeBox.clientWidth;
+      const gh = globeBox.clientHeight;
+      if (globeCanvas.width !== Math.floor(gw * dpr) || globeCanvas.height !== Math.floor(gh * dpr)) {
+        globeCanvas.width = Math.floor(gw * dpr);
+        globeCanvas.height = Math.floor(gh * dpr);
+      }
+
+      const dw = detailBox.clientWidth;
+      const dh = detailBox.clientHeight;
+      if (detailCanvas.width !== Math.floor(dw * dpr) || detailCanvas.height !== Math.floor(dh * dpr)) {
+        detailCanvas.width = Math.floor(dw * dpr);
+        detailCanvas.height = Math.floor(dh * dpr);
+      }
+    }
+
+    window.addEventListener('resize', resizeCanvases);
+
+    function mainAnimationLoop() {
+      // Smoothly interpolate tilt angle
+      state.currentTilt += (state.targetTilt - state.currentTilt) * 0.08;
+
+      resizeCanvases();
+      drawGlobe();
+      drawDetail();
+      drawOrbitInset();
+      requestAnimationFrame(mainAnimationLoop);
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      resizeCanvases();
+      updateMetricsUI();
+      renderWizardStep(1);
+      requestAnimationFrame(mainAnimationLoop);
+    });
+
+  </script>
+</body>
+</html>
